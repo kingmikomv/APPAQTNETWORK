@@ -58,7 +58,7 @@
                         <a href="#" class="nav-link has-dropdown"><i class="fa fa-rss"></i><span>Hotspot</span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{{route('aksesactivehotspot', ['ipmikrotik' => session('ipmikrotik')])}}">Active</a></li>
-                            
+                            <li><a href="{{route('aksesuserhotspot', ['ipmikrotik' => session('ipmikrotik')])}}">User</a></li>
                          
                         </ul>
                     </li>

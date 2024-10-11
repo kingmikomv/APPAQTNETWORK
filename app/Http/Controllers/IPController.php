@@ -433,7 +433,7 @@ class IPController extends Controller
     
     // HOTSPOT 
 // HOTSPOT
-public function aksesactivehotspot(Request $request) {
+    public function aksesactivehotspot(Request $request) {
     // Ambil IP Mikrotik dari query parameter
     $ipmikrotik = $request->query('ipmikrotik');
 
@@ -479,9 +479,9 @@ public function aksesactivehotspot(Request $request) {
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Gagal terhubung ke MikroTik: ' . $e->getMessage());
     }
-}
-public function disconnectHotspot(Request $request)
-{
+    }
+    public function disconnectHotspot(Request $request)
+    {
     $macAddress = $request->input('mac_address');
     $ipmikrotik = $request->input('ipaddress');
 
@@ -537,9 +537,70 @@ public function disconnectHotspot(Request $request)
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
     }
-}
+    }
 
 
+    public function aksesuserhotspot(Request $request){
+        $ipmikrotik = $request->query('ipmikrotik');
+    
+        // Cek apakah IP Mikrotik valid di database
+        $mikrotik = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
+    
+        if (!$mikrotik) {
+            return redirect()->back()->with('error', 'Mikrotik dengan IP tersebut tidak ditemukan.');
+        }
+    
+        // Ambil data VPN berdasarkan IP dan user unik
+        $datavpn = VPN::where('ipaddress', $mikrotik->ipmikrotik)
+            ->where('unique_id', auth()->user()->unique_id)
+            ->first();
+    
+        if (!$datavpn) {
+            return redirect()->back()->with('error', 'Data VPN tidak ditemukan untuk IP ini.');
+        }
+    
+        // Ambil username dan password dari database
+        $username = $mikrotik->username;
+        $password = $mikrotik->password;
+    
+        try {
+            // Membuat koneksi ke MikroTik dengan RouterOS PHP Client
+            $client = new \RouterOS\Client([
+                'host' => 'id-1.aqtnetwork.my.id:' . $datavpn->portapi,
+                'user' => $username,
+                'pass' => $password,
+                'port' => $datavpn->portapi,
+            ]);
+    
+            // Query untuk mendapatkan data hotspot yang aktif
+            $query = new \RouterOS\Query('/ip/hotspot/user/print');
+            $userHotspots = $client->query($query)->read();
+    
+            // Ambil data profile jika diperlukan
+            $query = new \RouterOS\Query('/ip/hotspot/user/profile/print');
+            $profile = $client->query($query)->read();
+    
+            // Ambil data server hotspot jika diperlukan
+            $query = new \RouterOS\Query('/ip/hotspot/print');
+            $serverhs = $client->query($query)->read();
+    
+            if ($request->ajax()) {
+                return response()->json([
+                    'userHotspots' => $userHotspots,
+                    'profiles' => array_column($profile, 'name'),
+                    'serverhs' => array_column($serverhs, 'name')
+
+                ]);
+            }
+    
+            // Tampilkan hasil di view
+            return view('Dashboard.HOTSPOT.userhotspot', compact('serverhs', 'userHotspots', 'ipmikrotik', 'profile'));
+            //dd($serverhs);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal terhubung ke MikroTik: ' . $e->getMessage());
+        }
+    }
+    
 
     
     
