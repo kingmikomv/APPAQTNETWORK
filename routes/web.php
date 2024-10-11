@@ -107,7 +107,7 @@ Route::group(['prefix' => '/home/datamikrotik/hotspot/', 'middleware' => ['auth'
         Route::post('/disconnect-hotspot', 'disconnectHotspot')->name('disconnect.hotspot');
 
     });
-});
+});;
 
 
 
