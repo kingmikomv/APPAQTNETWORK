@@ -106,6 +106,8 @@ Route::group(['prefix' => '/home/datamikrotik/hotspot/', 'middleware' => ['auth'
         Route::get('/aksesactivehotspot', 'aksesactivehotspot')->name('aksesactivehotspot');
         Route::post('/disconnect-hotspot', 'disconnectHotspot')->name('disconnect.hotspot');
         Route::get('/aksesuserhotspot', 'aksesuserhotspot')->name('aksesuserhotspot');
+        Route::post('/generateHotspot', 'generateHotspot')->name('generateHotspot');
+
     });
 });;
 

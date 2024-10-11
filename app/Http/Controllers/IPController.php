@@ -600,6 +600,116 @@ class IPController extends Controller
             return redirect()->back()->with('error', 'Gagal terhubung ke MikroTik: ' . $e->getMessage());
         }
     }
+    public function generateHotspot(Request $request)
+{
+    // Ambil IP MikroTik dari query parameter
+    $ipmikrotik = $request->input('ipmikrotik');
+
+    // Cek apakah IP MikroTik valid di database
+    $mikrotik = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
+    if (!$mikrotik) {
+        return redirect()->back()->with('error', 'Mikrotik dengan IP tersebut tidak ditemukan.');
+    }
+
+    // Ambil data VPN berdasarkan IP dan user unik
+    $datavpn = VPN::where('ipaddress', $mikrotik->ipmikrotik)
+        ->where('unique_id', auth()->user()->unique_id)
+        ->first();
+
+    if (!$datavpn) {
+        return redirect()->back()->with('error', 'Data VPN tidak ditemukan untuk IP ini.');
+    }
+
+    // Ambil data dari request tanpa validasi
+    $server = $request->input('server');
+    $suffix = $request->input('suffix');
+    $profile = $request->input('profile');
+    $quantity = $request->input('quantity', 1); // Default to 1 if not set
+    $type = $request->input('type', 'Username'); // Default to 'Username' if not set
+    $length = $request->input('length', 4); // Default to 4 if not set
+    $randomizer = $request->input('randomizer', '123ABC'); // Default to '123ABC' if not set
+
+    // Fungsi untuk menghasilkan string acak
+    function generateRandomString($length = 5, $randomizer)
+    {
+        return substr(str_shuffle(str_repeat($randomizer, ceil($length / strlen($randomizer)))), 0, $length);
+    }
+
+    // Generate random usernames dan password jika diperlukan
+    $userDetails = [];
+    $count = 0; // Initialize counter
+
+    while ($count < $quantity) {
+        $randomSuffix = generateRandomString($length, $randomizer);
+        $username = $suffix . $randomSuffix;
+
+        // Jika tipe adalah "Username & Password", buat password acak
+        if ($type === 'Username & Password') {
+            $password = generateRandomString(8, $randomizer);
+            $userDetails[] = ['username' => $username, 'password' => $password];
+        } else {
+            $userDetails[] = ['username' => $username];
+        }
+
+        $count++; // Increment the counter
+    }
+
+    try {
+        // Create a connection to MikroTik with RouterOS PHP Client
+        $client = new \RouterOS\Client([
+            'host' => 'id-1.aqtnetwork.my.id:' . $datavpn->portapi,
+            'user' => $mikrotik->username,
+            'pass' => $mikrotik->password,
+            'port' => $datavpn->portapi, // Correct port
+        ]);
+        
+        // Initialize results array to store responses
+        $results = [];
+        
+        // Loop through each user and add them to MikroTik Hotspot using a for loop
+        for ($i = 0; $i < count($userDetails); $i++) {
+            $user = $userDetails[$i]; // Access user details using index
+
+            $params = [
+                'server' => $server,
+                'profile' => $profile,
+                'name' => $user['username'],
+                'password' => $type === 'Username & Password' ? $user['password'] : '',
+            ];
+
+            // Debugging: Log the parameters being sent
+            \Log::info('Sending request to MikroTik with parameters:', $params);
+
+            // Send the request to MikroTik
+            $response = $client->query('/ip/hotspot/user/add', $params)->read();
+
+            // Check for specific MikroTik errors in response
+            if (isset($response['!trap'])) {
+                // Log the error response from MikroTik
+                \Log::error('MikroTik error response:', $response);
+                throw new \Exception('MikroTik error: ' . $response['!trap']);
+            }
+
+            // Store the response for tracking
+            $results[] = $response;
+        }
+
+        // Optional: Handle $results if needed (e.g., logging, notifications)
+        // dd($results); // Uncomment to debug the responses
+
+        // Redirect back with success message
+        return redirect()->back()->with('success', 'User Hotspot berhasil ditambahkan.');
+
+    } catch (\Exception $e) {
+        // Handle errors if something goes wrong with the connection
+        return redirect()->back()->with('error', 'Terjadi kesalahan saat menghubungkan ke MikroTik: ' . $e->getMessage());
+    }
+}
+
+    
+    
+
+
     
 
     
