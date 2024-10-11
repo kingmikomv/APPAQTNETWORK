@@ -101,6 +101,16 @@ Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verifi
     });
 });
 
+=======
+Route::group(['prefix' => '/home/datamikrotik/hotspot/', 'middleware' => ['auth', 'verified']], function() {
+    Route::controller(IPController::class)->group(function () {
+        Route::get('/aksesactivehotspot', 'aksesactivehotspot')->name('aksesactivehotspot');
+        Route::post('/disconnect-hotspot', 'disconnectHotspot')->name('disconnect.hotspot');
+
+    });
+});;
+
+
 
 // MIKROTIK CPU and Status Routes
 Route::get('/mikrotik/cpu-load/{ipmikrotik}', [MKController::class, 'getCpuLoad'])->middleware(['auth', 'verified']);
