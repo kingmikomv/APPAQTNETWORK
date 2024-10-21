@@ -113,6 +113,10 @@
                                     <input type="text" id="name" name="name" class="form-control" required>
                                 </div>
                                 <div class="mb-3">
+                                    <label for="name" class="form-label">Password</label>
+                                    <input type="password" id="name" name="password" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
                                     <label for="comment" class="form-label">Comment</label>
                                     <textarea id="comment" name="comment" class="form-control"></textarea>
                                 </div>
