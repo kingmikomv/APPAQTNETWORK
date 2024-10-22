@@ -254,10 +254,10 @@
         $('#vpnTable').on('click', '.btn-primary', function() {
             // Get the data from the row
             var row = $(this).closest('tr');
-            var namaAkun = row.find('td:eq(0)').text();
-            var username = row.find('td:eq(1)').text();
-            var password = row.find('td:eq(2)').text();
-            var ipAddress = row.find('td:eq(3)').text();
+            var namaAkun = row.find('td:eq(1)').text();
+            var username = row.find('td:eq(2)').text();
+            var password = row.find('td:eq(3)').text();
+            var ipAddress = row.find('td:eq(4)').text();
             var wbx = row.find('td:eq(5)').text();
 
             // Generate the MikroTik L2TP script dynamically
