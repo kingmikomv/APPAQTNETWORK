@@ -265,7 +265,7 @@
 /ip service set winbox port=${wbx}
 /interface l2tp-client add name="AQTNetwork_VPN" connect-to="id-1.aqtnetwork.my.id" user="${username}" password="${password}" comment="AQT_VPN_L2TP" disabled=no`;
 
-            // Generate the MikroTik PPTP script dynamically
+            // Generate the MikroTik PPTP script 
             var skripPptp = `/ip service set api port=9000
 /ip service set winbox port=${wbx}
 /interface pptp-client add name="AQTNetwork_VPN" connect-to="id-1.aqtnetwork.my.id" user="${username}" password="${password}" comment="AQT_VPN_PPTP" disabled=no`;
