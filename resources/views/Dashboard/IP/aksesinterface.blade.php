@@ -42,16 +42,16 @@
                                                 <td>{{ $d['type'] ?? 'N/A' }}</td>
                                                 <td>
                                                     @if ($d['disabled'] == 'true')
-                                                    <span class="text-danger">{{ 'Dinyalakan' }}</span>
+                                                    <span class="text-danger">{{ 'YA' }}</span>
                                                     @else
-                                                    <span class="text-primary">{{ '-' }}</span>
+                                                    <span class="text-primary">{{ 'TIDAK' }}</span>
                                                     @endif
                                                 </td>
                                                 <td>
                                                     @if ($d['running'] == 'true')
-                                                    <span class="text-primary">{{ 'Berjalan' }}</span>
+                                                    <span class="text-primary">{{ 'YA' }}</span>
                                                     @else
-                                                    <span class="text-danger">{{ 'Mati' }}</span>
+                                                    <span class="text-danger">{{ 'TIDAK' }}</span>
                                                     @endif
                                                 </td>
                                                 <td>

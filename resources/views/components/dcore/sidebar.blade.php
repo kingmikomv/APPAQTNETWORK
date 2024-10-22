@@ -18,7 +18,7 @@
                     <li><a class="nav-link" href="{{ route('datamikrotik') }}">Data Mikrotik</a></li>
 
                     @endif
-                    <li><a class="nav-link" href="">Data OLT</a></li>
+                    <li><a class="nav-link" href="{{route('dataolt')}}">Data OLT</a></li>
                 </ul>
             </li>
 
