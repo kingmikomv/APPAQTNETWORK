@@ -137,6 +137,7 @@ class IPController extends Controller
             'service' => 'required|string',
             'profile' => 'required|string',
             'name' => 'required|string',
+            'password' => 'required',
             'comment' => 'nullable|string',
         ]);
     
@@ -158,6 +159,7 @@ class IPController extends Controller
             $query->equal('service', $validated['service']);
             $query->equal('profile', $validated['profile']);
             $query->equal('name', $validated['name']);
+            $query->equal('password', $validated['password']);
             $query->equal('comment', $validated['comment']);
     
             // Execute the query
