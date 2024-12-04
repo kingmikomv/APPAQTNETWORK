@@ -20,7 +20,7 @@
                             <div class="card-body">
                                 <p style="font-size: 20px;">Pada halaman ini berfungsi sebagai halaman penambahan data OLT EPON HA7304</p>
                                 <hr>
-                                <p class="mb-0" style="font-size: 20px;">Jika OLT anda tidak mempunyai IP Public, Jika anda bingung silahkan kunjungi link youtube kami untuk pemasangan VPN pada OLT anda</p>
+                                <p class="mb-0" style="font-size: 20px;">Jika OLT anda tidak mempunyai IP Public silahkan tambahkan disini, dan jika anda bingung silahkan kunjungi link youtube kami untuk pemasangan VPN pada OLT anda</p>
                             </div>
                         </div>
                     </div>
