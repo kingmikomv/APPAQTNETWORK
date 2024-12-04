@@ -13,14 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('olt', function (Blueprint $table) {
+        Schema::create('v_p_n_o_l_t_s', function (Blueprint $table) {
             $table->id();
-            $table->string('unique_id')->nullable();
-            $table->string('site')->nullable();
-            $table->string('ipmikrotik')->nullable();
-            $table->string('ipolt')->nullable();
-            $table->string('portolt')->nullable();
-
             $table->timestamps();
         });
     }
@@ -32,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('olt');
+        Schema::dropIfExists('v_p_n_o_l_t_s');
     }
 };

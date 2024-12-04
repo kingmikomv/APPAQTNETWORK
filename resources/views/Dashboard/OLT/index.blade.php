@@ -29,18 +29,31 @@
                     <div class="col-lg-4">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Tambah OLT</h4>
+                                <h4>Tambah VPN OLT</h4>
                             </div>
                             <div class="card-body">
-                                <form id="yourFormId" action="{{ route('tambaholt') }}" method="post">
+                                <form action="{{ route('tambaholt') }}" method="post">
                                     @csrf
                                     <div class="form-group">
                                         <label for="ipolt">IP OLT</label>
                                         <input type="text" class="form-control" placeholder="172.160.x.x" name="ipolt" id="ipolt">
                                     </div>
                                     <div class="form-group">
+                                        <label for="ipolt">PORT OLT</label>
+                                        <input type="text" class="form-control" placeholder="80, 8080" name="portolt" id="ipolt">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="site">Lokasi OLT</label>
+                                        <select class="form-control" id="exampleFormControlSelect1" name="sitemikrotik">
+                                            <option disabled selected value>Pilih Lokasi OLT</option>
+                                            @foreach($mikrotik as $mk)
+                                            <option>{{$mk->site}}</option>
+                                            @endforeach
+                                          </select>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="site">Site / Nama OLT</label>
-                                        <input type="text" class="form-control" placeholder="Site Indramayu" name="site" id="site">
+                                        <input type="text" class="form-control" placeholder="OLT xxx" name="site" id="site">
                                     </div>
                                     
                                     <div class="form-group">
@@ -64,15 +77,20 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>IP OLT</th>
+                                                <th>Port OLT</th>
+                                                <th>Remote OLT</th>
                                                 <th>Site</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @php $no = 1; @endphp
                                             @foreach($olts as $olt)
                                                 <tr>
-                                                    <td>{{ $olt->id }}</td>
+                                                    <td>{{ $no++ }}</td>
                                                     <td>{{ $olt->ipolt }}</td>
+                                                    <td>{{ $olt->portolt }}</td>
+                                                    <td><a href="{{ 'http://id-1.aqtnetwork.my.id:'. $olt->portolt }}" class="btn btn-primary" target="_blank">Akses Cepat</a></td>
                                                     <td>{{ $olt->site }}</td>
                                                     <td>
                                                         <!-- Dropdown Button for Actions -->
@@ -81,9 +99,7 @@
                                                                 Action
                                                             </button>
                                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $olt->id }}">
-                                                                <a class="dropdown-item" href="{{ route('aksesolt', ['ipolt' => $olt->ipolt]) }}">
-                                                                    <i class="fas fa-bolt"></i> Akses
-                                                                </a>
+                                                                
                                                                 <a class="dropdown-item" href="{{ route('hapusolt', ['id' => $olt->id]) }}">
                                                                     <i class="fas fa-trash"></i> Hapus
                                                                 </a>

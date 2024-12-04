@@ -84,7 +84,6 @@
                                 <!-- Address MikroTik -->
                                 <span id="mikrotikAddress{{ $item->id }}">id-1.aqtnetwork.my.id:{{ $item->portmikrotik }}</span>
                                 <!-- Tombol Copy -->
-                                <button class="btn btn-primary btn-sm ml-2" onclick="copyToClipboard('mikrotikAddress{{ $item->id }}')">Copy</button>
                             </td>
                                                         <td>
                                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#vpnInfoModal">
