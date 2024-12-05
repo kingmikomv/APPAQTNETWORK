@@ -107,10 +107,14 @@ class UndianController extends Controller
         // Pilih pemenang secara acak
         $winner = $activeUsers[array_rand($activeUsers)];
 
-        return response()->json([
-            'message' => 'Winner selected successfully',
-            'winner' => $winner,
-        ]);
+
+        if ($dataUndian) {
+            $dataUndian->update([
+                'pemenang' => $winner, // Update hanya kolom `pemenang`
+            ]);
+        }
+        return response()->json(['success' => true, 'message' => 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah]);
+
     } catch (\Exception $e) {
         return response()->json([
             'error' => 'Failed to connect to MikroTik',

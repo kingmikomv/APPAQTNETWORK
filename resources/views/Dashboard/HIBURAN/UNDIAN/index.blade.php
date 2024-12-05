@@ -75,7 +75,11 @@
                                             <td>{{ $row->tanggal }}</td>
                                             <td>{{ $row->pemenang ?? 'Belum ada' }}</td>
                                             <td>
+                                                @if($row->pemenang == null)
                                                 <a href="{{route('caripemenang', ['unique_undian' => $row->unique_undian])}}" class="btn btn-primary btn-sm">Cari Pemenang</a>
+                                                @else
+                                                <button class="btn btn-danger btn-sm">Pemenang Sudah Ada</button>
+                                                @endif
                                             </td>
                                             <td>
                                                 <button class="btn btn-success btn-sm">Edit</button>
@@ -105,3 +109,20 @@
         $('#untianTable').DataTable();
     });
 </script>
+@if (session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '{{ session("success") }}',
+            showConfirmButton: true
+        });
+    </script>
+@elseif (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: '{{ session("error") }}',
+            showConfirmButton: true
+        });
+    </script>
+@endif
