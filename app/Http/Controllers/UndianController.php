@@ -41,7 +41,7 @@ class UndianController extends Controller
                 'user' => $username,
                 'pass' => $password,
         ]);
-        dd($client);
+        //dd($client);
         // Ambil data active PPPoE connections
         $query = new \RouterOS\Query('/ppp/active/print');
         $response = $client->query($query)->read();
