@@ -42,33 +42,33 @@ class UndianController extends Controller
                 'pass' => $password,
         ]);
         dd($client);
-        // // Ambil data active PPPoE connections
-        // $query = new \RouterOS\Query('/ppp/active/print');
-        // $response = $client->query($query)->read();
+        // Ambil data active PPPoE connections
+        $query = new \RouterOS\Query('/ppp/active/print');
+        $response = $client->query($query)->read();
 
-        // if (empty($response)) {
-        //     return response()->json(['error' => 'No active PPPoE connections found'], 404);
-        // }
+        if (empty($response)) {
+            return response()->json(['error' => 'No active PPPoE connections found'], 404);
+        }
 
-        // // Ambil username dari koneksi aktif
-        // $activeUsers = array_map(function ($connection) {
-        //     return $connection['name'] ?? null;
-        // }, $response);
+        // Ambil username dari koneksi aktif
+        $activeUsers = array_map(function ($connection) {
+            return $connection['name'] ?? null;
+        }, $response);
 
-        // // Filter hanya username yang valid
-        // $activeUsers = array_filter($activeUsers);
+        // Filter hanya username yang valid
+        $activeUsers = array_filter($activeUsers);
 
-        // if (empty($activeUsers)) {
-        //     return response()->json(['error' => 'No valid PPPoE usernames found'], 404);
-        // }
+        if (empty($activeUsers)) {
+            return response()->json(['error' => 'No valid PPPoE usernames found'], 404);
+        }
 
-        // // Pilih pemenang secara acak
-        // $winner = $activeUsers[array_rand($activeUsers)];
+        // Pilih pemenang secara acak
+        $winner = $activeUsers[array_rand($activeUsers)];
 
-        // return response()->json([
-        //     'message' => 'Winner selected successfully',
-        //     'winner' => $winner,
-        // ]);
+        return response()->json([
+            'message' => 'Winner selected successfully',
+            'winner' => $winner,
+        ]);
     } catch (\Exception $e) {
         return response()->json([
             'error' => 'Failed to connect to MikroTik',
