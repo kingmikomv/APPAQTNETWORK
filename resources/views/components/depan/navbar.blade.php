@@ -16,6 +16,13 @@
           <li><a href="#services">Pelayanan</a></li>
           <li><a href="#faq">FAQ</a></li>
           <li><a href="#contact">Kontak</a></li>
+          <li class="dropdown"><a href="#"><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="{{route('undian')}}">Undian</a></li>
+              <li><a href="#">Informasi</a></li>
+              <li><a href="#">Status</a></li>
+            </ul>
+          </li>
           <li><a href="{{ route('login') }}" class="bi bi-lightning">My Account</a></li>
 
         </ul>

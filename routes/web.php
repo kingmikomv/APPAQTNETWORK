@@ -26,7 +26,12 @@ use App\Http\Controllers\UndianController;
 
 Route::get('/', [DepanController::class, 'index'])->name('indexdepan');
 
-
+Route::group(['prefix' => '/informasi'], function() {
+    Route::controller(DepanController::class)->group(function () {
+        Route::get('/undian', 'undian')->name('undian');
+       
+    });
+});
 
 Auth::routes(['verify' => true, 'reset' => true]);
 
