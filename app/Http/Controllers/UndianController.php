@@ -46,9 +46,8 @@ class UndianController extends Controller
                 'unique_undian' => Str::random(10), // Menghasilkan teks acak sepanjang 10 karakter
 
             ]);
-            dd('su');
-            // Kirimkan response sukses
-           //return redirect()->back()->with('success', 'Data undian berhasil disimpan.');
+            session()->flash('success', 'Undian Berhasil Di Buat');
+        return redirect()->back();
        
     }
     
@@ -115,7 +114,7 @@ class UndianController extends Controller
         }
         // return response()->json(['success' => true, 'message' => 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah]);
 
-        session()->flash('error', 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah);
+        session()->flash('success', 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah);
         return redirect()->back();
 
     } catch (\Exception $e) {
