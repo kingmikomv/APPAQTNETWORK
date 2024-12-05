@@ -10,11 +10,11 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Beranda</a></li>
-          <li><a href="#about">Tentang</a></li>
-          <li><a href="#paket">Paket Internet</a></li>
-          <li><a href="#services">Pelayanan</a></li>
-          <li><a href="#faq">FAQ</a></li>
+          <li><a href="{{url('/#hero')}}" class="active">Beranda</a></li>
+          <li><a href="{{url('/')}}#about">Tentang</a></li>
+          <li><a href="{{url('/')}}#paket">Paket Internet</a></li>
+          <li><a href="{{url('/')}}#services">Pelayanan</a></li>
+          <li><a href="{{url('/')}}#faq">FAQ</a></li>
           <li><a href="#contact">Kontak</a></li>
           <li class="dropdown"><a href="#"><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
