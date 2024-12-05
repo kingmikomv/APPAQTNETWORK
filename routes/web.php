@@ -117,11 +117,13 @@ Route::group(['prefix' => '/home/datamikrotik/hotspot/', 'middleware' => ['auth'
     });
 });
 
-Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function() {
-    Route::controller(UndianController::class)->group(function () {
+Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null) {
+    Route::controller(UndianController::class)->group(function ($id = null) {
         Route::get('/', 'index')->name('undianadmin');
         Route::post('/buatundian', 'buatundian')->name('buatundian');
         Route::get('/caripemenang', 'caripemenang')->name('caripemenang');
+        Route::get('/{id}/hapusundian', 'hapusundian')->name('hapusundian');
+
     });
 });
 

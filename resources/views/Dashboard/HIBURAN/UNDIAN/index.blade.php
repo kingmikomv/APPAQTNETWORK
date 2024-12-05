@@ -87,7 +87,8 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <button class="btn btn-danger btn-sm">Hapus</button>
+                                                <a href="{{route('hapusundian', $row->id)}}"
+                                                    class="btn btn-danger btn-sm">Hapus Undian</a>
                                             </td>
                                         </tr>
                                         @endforeach

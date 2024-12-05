@@ -19,6 +19,8 @@
           <li class="dropdown"><a href="#"><span>Informasi</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="{{route('undian')}}">Undian</a></li>
+              <li><a href="">Video Pengundian Hadiah</a></li>
+
               <li><a href="#">Informasi</a></li>
               <li><a href="#">Status</a></li>
             </ul>

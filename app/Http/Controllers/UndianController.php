@@ -124,4 +124,9 @@ class UndianController extends Controller
         ], 500);
         }
     }
+    public function hapusundian($id){
+        $undian = Undian::find($id)->delete();
+        session()->flash('success', 'Undian Berhasil Di Hapus');
+        return redirect()->back();
+    }
 }
