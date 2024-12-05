@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Undian extends Model
 {
     use HasFactory;
+    protected $table = 'undian';
+    protected $guarded = [];
 }

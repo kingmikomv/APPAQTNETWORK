@@ -33,7 +33,7 @@
                                     
                                       <div class="form-group">
                                         <label for="exampleFormControlFile1">FOTO HADIAH</label>
-                                        <input type="file" class="form-control-file" name="file">
+                                        <input type="file" class="form-control-file" name="foto">
                                       </div>
                                       <div class="form-group">
                                         <label for="exampleFormControlFile1">TANGGAL DIMULAI</label>
@@ -48,12 +48,60 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-12"> <!-- Full width column -->
+                        <div class="card wide-card">
+                            <div class="card-body">
+                                <table class="table" id="untianTable">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Kode Undian</th>
+                                            <th>Site</th>
+                                            <th>Hadiah</th>
+                                            <th>Tanggal Dimulai</th>
+                                            <th>Pemenang</th>
+                                            <th>Cari Pemenang</th>
+                                            <th>Option</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php $no = 1; @endphp
+                                        @foreach ($daftarundian as $row)
+                                        <tr>
+                                            <td>{{ $no++ }}</td>
+                                            <td>{{ $row->unique_undian }}</td>
+                                            <td>{{ $row->site }}</td>
+                                            <td>{{ $row->hadiah }}</td>
+                                            <td>{{ $row->tanggal }}</td>
+                                            <td>{{ $row->pemenang ?? 'Belum ada' }}</td>
+                                            <td>
+                                                <a href="{{route('caripemenang', ['unique_undian' => $row->unique_undian])}}" class="btn btn-primary btn-sm">Cari Pemenang</a>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-success btn-sm">Edit</button>
+                                                <button class="btn btn-danger btn-sm">Hapus</button>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <!-- END OF CENTER CONTENT -->
             </section>
+            
         </div>
+        
         <x-dcore.footer />
     </div>
 </div>
 <x-dcore.script />
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with options
+        $('#untianTable').DataTable();
+    });
+</script>

@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('undian', function (Blueprint $table) {
             $table->id();
+            $table->string('site');
+            $table->string('hadiah');
+            $table->longText('foto');
+            $table->date('tanggal');
+            $table->string('pemenang')->nullable();
             $table->timestamps();
         });
     }

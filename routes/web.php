@@ -116,6 +116,7 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
     Route::controller(UndianController::class)->group(function () {
         Route::get('/', 'index')->name('undianadmin');
         Route::post('/buatundian', 'buatundian')->name('buatundian');
+        Route::get('/caripemenang', 'caripemenang')->name('caripemenang');
     });
 });
 
