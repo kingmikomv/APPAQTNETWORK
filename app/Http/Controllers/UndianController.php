@@ -113,7 +113,10 @@ class UndianController extends Controller
                 'pemenang' => $winner, // Update hanya kolom `pemenang`
             ]);
         }
-        return response()->json(['success' => true, 'message' => 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah]);
+        // return response()->json(['success' => true, 'message' => 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah]);
+
+        session()->flash('error', 'Selamat kepada '.$winner.' Mendapatkan Hadiah '. $dataUndian->hadiah);
+        return redirect()->back();
 
     } catch (\Exception $e) {
         return response()->json([

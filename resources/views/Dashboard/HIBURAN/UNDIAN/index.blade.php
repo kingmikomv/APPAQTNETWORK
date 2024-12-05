@@ -78,7 +78,7 @@
                                                 @if($row->pemenang == null)
                                                 <a href="{{route('caripemenang', ['unique_undian' => $row->unique_undian])}}" class="btn btn-primary btn-sm">Cari Pemenang</a>
                                                 @else
-                                                <button class="btn btn-danger btn-sm">Pemenang Sudah Ada</button>
+                                                <button class="btn btn-danger btn-sm" disabled>Pemenang Sudah Ada</button>
                                                 @endif
                                             </td>
                                             <td>
