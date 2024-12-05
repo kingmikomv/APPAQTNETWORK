@@ -80,6 +80,13 @@
                         <li><a class="nav-link" href="">Daftar Mikrotik</a></li>
                     </ul>
                 </li>
+                <li class="dropdown">
+                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-users"></i> <span>Hiburan</span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="nav-link" href="{{route('undianadmin')}}">Undian</a></li>
+                        <li><a class="nav-link" href="">Youtube</a></li>
+                    </ul>
+                </li>
             @endcan
         </ul>
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\MKController;
 use App\Http\Controllers\OLTController;
 use App\Http\Controllers\VPNController;
 use App\Http\Controllers\DepanController;
+use App\Http\Controllers\UndianController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,9 +110,14 @@ Route::group(['prefix' => '/home/datamikrotik/hotspot/', 'middleware' => ['auth'
         Route::post('/generateHotspot', 'generateHotspot')->name('generateHotspot');
 
     });
-});;
+});
 
-
+Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function() {
+    Route::controller(UndianController::class)->group(function () {
+        Route::get('/', 'index')->name('undianadmin');
+        Route::post('/buatundian', 'buatundian')->name('buatundian');
+    });
+});
 
 // MIKROTIK CPU and Status Routes
 Route::get('/mikrotik/cpu-load/{ipmikrotik}', [MKController::class, 'getCpuLoad'])->middleware(['auth', 'verified']);
