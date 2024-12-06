@@ -76,7 +76,7 @@
                 <li class="dropdown">
                     <a href="#" class="nav-link has-dropdown"><i class="fas fa-users"></i> <span>User</span></a>
                     <ul class="dropdown-menu">
-                        <li><a class="nav-link" href="">Data Pengguna</a></li>
+                        <li><a class="nav-link" href="{{route('member')}}">Data Pengguna</a></li>
                         <li><a class="nav-link" href="">Daftar Mikrotik</a></li>
                     </ul>
                 </li>

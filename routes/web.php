@@ -7,6 +7,7 @@ use App\Http\Controllers\MKController;
 use App\Http\Controllers\OLTController;
 use App\Http\Controllers\VPNController;
 use App\Http\Controllers\DepanController;
+use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\UndianController;
 
 /*
@@ -123,6 +124,14 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
         Route::post('/buatundian', 'buatundian')->name('buatundian');
         Route::get('/caripemenang', 'caripemenang')->name('caripemenang');
         Route::get('/{id}/hapusundian', 'hapusundian')->name('hapusundian');
+
+    });
+});
+
+Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null) {
+    Route::controller(PenggunaController::class)->group(function ($id = null) {
+        Route::get('/', 'index')->name('member');
+        
 
     });
 });

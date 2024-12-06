@@ -48,3 +48,12 @@
     </div><!-- End Container -->
 
 </section><!-- End Section -->
+<section id="gallery" class="gallery-section py-5">
+    <div class="row">
+        <div class="col-md-4">1</div>
+        <div class="col-md-4">1</div>
+        <div class="col-md-4">1</div>
+   
+
+    </div>
+</section>
