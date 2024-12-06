@@ -25,4 +25,10 @@ class PenggunaController extends Controller
         return view('Dashboard/PENGGUNA/MEMBER/VPN/daftarvpn', compact('dataVPN'));
 
     }
+    public function daftarmikrotik(Request $request){
+        $unique_uid = $request->unique_id;
+        $dataMikrotik = Mikrotik::where('unique_id', $unique_uid)->get();
+        return view('Dashboard/PENGGUNA/MEMBER/MIKROTIK/daftarmikrotik', compact('dataMikrotik'));
+
+    }
 }

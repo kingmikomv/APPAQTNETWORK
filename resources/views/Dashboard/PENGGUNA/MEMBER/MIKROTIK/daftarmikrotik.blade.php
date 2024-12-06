@@ -19,32 +19,31 @@
                                     <thead>
                                         <tr>
                                             <td>No</td>
-                                            <td>Nama Member</td>
-                                            <td>Role</td>
-                                            <td>Jumlah VPN</td>
-                                            <td>Jumlah Mikrotik</td>
+                                            <td>Site MikroTik</td>
+                                            <td>IP Address</td>
+                                            <td>Username</td>
+                                           
                                             <td>OPT</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @php $no = 1; @endphp
-                                        @foreach ($members as $mb)
+                                        @foreach ($dataMikrotik as $mb)
                                           
                                         <tr>
                                             <td>{{$no++}}</td>
-                                            <td>{{$mb->name}}</td>
-                                            <td>{{$mb->role}}</td>
-                                            <td>{{$mb->vpn}}</td>
-                                            <td>{{$mb->mikrotik}}</td>
+                                            <td>{{$mb->site}}</td>
+                                            <td>{{$mb->ipmikrotik}}</td>
+                                            <td>{{$mb->username}}</td>
+                                           
+
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                                                       Option
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                      <a class="dropdown-item" href="{{route('daftarvpn', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar VPN</a>
-                                                      <a class="dropdown-item" href="{{route('daftarmikrotik', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar MikroTik</a>
-                                                      <a class="dropdown-item" href="#"><i class="fas fa-trash"></i> Hapus Akun</a>
+                                                      
                                                     </div>
                                                   </div>
                                             </td>

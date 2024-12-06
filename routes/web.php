@@ -132,7 +132,8 @@ Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', '
     Route::controller(PenggunaController::class)->group(function ($id = null) {
         Route::get('/', 'index')->name('member');
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
-        
+        Route::get('/daftarmikrotik', 'daftarmikrotik')->name('daftarmikrotik');
+
 
     });
 });
