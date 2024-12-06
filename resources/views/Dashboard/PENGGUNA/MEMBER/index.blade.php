@@ -14,8 +14,8 @@
                     <!-- Welcome Card -->
                     <div class="col-12"> <!-- Full width column -->
                         <div class="card wide-card">
-                            <div class="card-body text-center">
-                                <table class="table">
+                            <div class="card-body text-center table-responsive">
+                                <table class="table" id="tableMember">
                                     <thead>
                                         <tr>
                                             <td>No</td>
@@ -57,3 +57,14 @@
     </div>
 </div>
 <x-dcore.script />
+<script>
+    $(document).ready(function () {
+        // Initialize DataTable with options
+        $('#tableMember').DataTable({
+            columnDefs: [
+                { className: "text-center", targets: "_all" } // Terapkan ke semua kolom
+            ]
+        });
+    });
+
+</script>
