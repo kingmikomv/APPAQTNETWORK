@@ -19,4 +19,10 @@ class PenggunaController extends Controller
         //dd($member->vpn);
         return view('Dashboard/PENGGUNA/MEMBER/index', compact('members'));
     }
+    public function daftarvpn(Request $request){
+        $unique_uid = $request->unique_id;
+        $dataVPN = VPN::where('unique_id', $unique_uid)->get();
+        return view('Dashboard/PENGGUNA/MEMBER/VPN/daftarvpn', compact('dataVPN'));
+
+    }
 }
