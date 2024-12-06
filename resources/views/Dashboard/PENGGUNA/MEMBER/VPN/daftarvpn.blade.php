@@ -49,7 +49,9 @@
                                                       Option
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                      
+                                                        <a class="dropdown-item" href="#"><i class="fas fa-ban"></i> Disabled</a>
+                                                        <a class="dropdown-item" href="#"><i class="fas fa-check"></i> Enabled</a>
+
                                                     </div>
                                                   </div>
                                             </td>
