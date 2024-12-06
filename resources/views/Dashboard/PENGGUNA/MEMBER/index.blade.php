@@ -20,6 +20,7 @@
                                         <tr>
                                             <td>No</td>
                                             <td>Nama Member</td>
+                                            <td>Role</td>
                                             <td>Jumlah VPN</td>
                                             <td>Jumlah Mikrotik</td>
                                             <td>OPT</td>
@@ -32,6 +33,7 @@
                                         <tr>
                                             <td>{{$no++}}</td>
                                             <td>{{$mb->name}}</td>
+                                            <td>{{$mb->role}}</td>
                                             <td>
                                                 {{$mb->vpn}}
                                             </td>

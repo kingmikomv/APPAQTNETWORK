@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class PenggunaController extends Controller
 {
     public function index(){
-        $members = User::where('role', 'user')->get();
+        $members = User::get();
 
         foreach ($members as $member) {
             $member->vpn = VPN::where('unique_id', $member->unique_id)->count();
