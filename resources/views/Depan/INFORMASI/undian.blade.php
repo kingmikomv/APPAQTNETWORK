@@ -2,6 +2,9 @@
 <html lang="en">
 
 <x-depan.head />
+
+</style>
+
 <body class="index-page">
 
 <x-depan.navbar />

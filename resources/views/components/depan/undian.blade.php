@@ -12,7 +12,7 @@
             <!-- Pusatkan Formulir -->
 
             <div class="col-lg-12 col-md-8" data-aos="fade-up" data-aos-delay="150">
-                <div class="service-item">
+                <div class="service-item table-responsive">
                     <table class="table" id="untianTable">
                         <thead>
                             <tr>
