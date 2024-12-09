@@ -133,6 +133,7 @@ Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', '
         Route::get('/', 'index')->name('member');
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
         Route::get('/daftarmikrotik', 'daftarmikrotik')->name('daftarmikrotik');
+        Route::get('/daftarvpn/togglevpn', 'togglevpn')->name('togglevpn');
 
 
     });

@@ -49,9 +49,20 @@
                                                       Option
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#"><i class="fas fa-ban"></i> Disabled</a>
-                                                        <a class="dropdown-item" href="#"><i class="fas fa-check"></i> Enabled</a>
-
+                                                        <a href="javascript:void(0);" 
+                                                        class="dropdown-item toggle-vpn" 
+                                                        data-unique-id="{{ $unique_uid }}" 
+                                                        data-ipaddr="{{ $mb->ipaddress }}" 
+                                                        data-disabled="yes">
+                                                        <i class="fas fa-ban"></i> Disabled
+                                                     </a>
+                                                     <a href="javascript:void(0);" 
+                                                        class="dropdown-item toggle-vpn" 
+                                                        data-unique-id="{{ $unique_uid }}" 
+                                                        data-ipaddr="{{ $mb->ipaddress }}" 
+                                                        data-disabled="no">
+                                                        <i class="fas fa-check"></i> Enabled
+                                                     </a>
                                                     </div>
                                                   </div>
                                             </td>
@@ -83,4 +94,45 @@
         });
     });
 
+</script>
+<script>
+    $(document).on('click', '.toggle-vpn', function (e) {
+        e.preventDefault();
+
+        const uniqueId = $(this).data('unique-id');
+        const ipAddr = $(this).data('ipaddr');
+        const disabled = $(this).data('disabled');
+
+        $.ajax({
+    url: "{{ route('togglevpn') }}",
+    method: 'GET',
+    data: {
+        ipaddr: ipAddr, // Ganti dengan IP address yang sesuai
+        disabled: disabled, // "yes" untuk disable, "no" untuk enable
+    },
+    success: function (response) {
+        if (response.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.message,
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: response.message,
+            });
+        }
+    },
+    error: function () {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Terjadi kesalahan saat menghubungi server.',
+        });
+    },
+});
+
+    });
 </script>
