@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mikrotik;
 use App\Models\OLT;
-use Illuminate\Http\Request;
 use RouterOS\Query;
+use App\Models\Port;
+use App\Models\User;
 use RouterOS\Client;
+use App\Models\Mikrotik;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Exists;
 use GuzzleHttp\Exception\ClientException;
 
 class OLTController extends Controller
@@ -14,7 +17,14 @@ class OLTController extends Controller
     public function index(){
         $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
         $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
-        return view('Dashboard.OLT.index', compact('olts', 'mikrotik'));
+        $port = Port::where('unique_id', auth()->user()->unique_id)->orderBy('id', 'DESC')->get();
+        $port2 = Port::where('unique_id', auth()->user()->unique_id)
+        ->whereNotIn('status_pembelian', [1, 2])  // Filter berdasarkan status_pembelian
+        ->distinct('pembelian_id')  // Ambil pembelian_id yang unik
+        ->get(['pembelian_id']);  // Ambil hanya kolom pembelian_id
+    
+//dd($port2);  // Melihat apa yang ada di $port2
+        return view('Dashboard.OLT.index', compact('olts', 'mikrotik', 'port', 'port2'));
     }
     public function tambaholt(Request $req)
 {
@@ -201,5 +211,107 @@ class OLTController extends Controller
         return redirect()->back();
     }
 }
+public function beli(Request $request)
+{
+    $namainput = $request->input('nama');
+    $banyaknya = $request->input('banyaknya');
+
+    // Generate unique ID for pembelian
+    $pembelian_id = 'AQT-' . uniqid() . mt_rand(100, 9999);
+
+    // Cek user berdasarkan unique_id
+    $cek = User::where('unique_id', $namainput)->first();
+
+    if (!$cek) {
+        return redirect()->back()->with('error', 'Data Tidak Ada!');
+    }
+
+    // Jika user ditemukan, tampilkan halaman invoice
+    $billed = $cek->name;
+    $unique = $cek->unique_id;
+    $email = $cek->email;
+
+    return view('Dashboard.OLT.co', compact('namainput', 'banyaknya', 'pembelian_id', 'billed', 'unique', 'email'));
+}
+
+public function prosespembayaran(Request $request, $unique_id, $pembelian_id)
+{
+    // Validasi input
+    $validated = $request->validate([
+        'unique_id' => 'required|exists:users,unique_id',
+        'pembelian_id' => 'required|string',
+        'banyaknya' => 'required|integer|min:1',
+    ]);
+    $cek = User::where('unique_id', $unique_id)->first();
+    // Ambil jumlah yang dibeli
+    $banyaknya = $validated['banyaknya'];
+
+    // Proses logika pembayaran di sini
+    // Masukkan ke database satu per satu berdasarkan jumlah yang dibeli
+    for ($i = 0; $i < $banyaknya; $i++) {
+        Port::create([
+            'nama' => $cek->name,
+            'unique_id' => $validated['unique_id'],
+            'pembelian_id' => $validated['pembelian_id'],
+            'status_pembelian' => '0',
+            'status_port' => '0',
+            'port' => null,
+            'bukti' => null
+        ]);
+    }
+
+    // Redirect kembali dengan pesan sukses
+    return redirect()->route('dataolt')->with('success', 'Pembayaran berhasil diproses dan data berhasil disimpan!');
+}
+
+public function bayar(Request $request)
+{
+    // Ambil parameter pembelian_id dari URL
+    $pembelian_id = $request->query('pembelian_id');
+    $dataPort = Port::where('unique_id', auth()->user()->unique_id)->where('pembelian_id', $pembelian_id)->get();
+    $hitung = 10000*$dataPort->count();
+    //dd($hitung);
+    return view('Dashboard.OLT.bayar', compact('pembelian_id', 'hitung', 'dataPort')); // Ganti 'bayar' dengan nama view yang sesuai
+}
+public function submitPayment(Request $request)
+{
+    // Validasi file upload dan pembelian_id
+    $request->validate([
+        'paymentProof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // Max 10MB
+        'pembelian_id' => 'required|exists:port,pembelian_id', // Validasi pembelian_id harus ada di tabel ports
+    ]);
+
+    // Proses upload file
+    if ($request->hasFile('paymentProof')) {
+        $file = $request->file('paymentProof');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+
+        // Menyimpan file ke storage public
+        $path = $file->move('payment_proofs', $fileName);
+
+        // Ambil pembelian_id dari form
+        $pembelian_id = $request->input('pembelian_id');
+
+        // Update status untuk semua entri dengan pembelian_id yang sama
+        $dataPort = Port::where('unique_id', auth()->user()->unique_id)->where('pembelian_id', $pembelian_id)->get();
+
+        foreach ($dataPort as $port) {
+            // Update status_pembelian dan status_port untuk setiap entri
+            $port->status_pembelian = 2; // Update status_pembelian menjadi 1
+            $port->status_port = 2; // Update status_port menjadi 1
+            $port->save(); // Simpan perubahan ke database
+        }
+
+        // Menyimpan path file atau data lainnya ke database jika diperlukan
+        // PaymentProof::create(['file_path' => $path]);
+
+        // Menampilkan pesan sukses setelah upload
+        return redirect()->route('dataolt')->with('success', 'Pembayaran berhasil diproses tunggu admin mengecek pembayaranmu');
+    }
+
+    // Menampilkan pesan error jika tidak ada file
+    return redirect()->back()->with('error', 'Gagal mengirim bukti pembayaran!');
+}
+
 
 }

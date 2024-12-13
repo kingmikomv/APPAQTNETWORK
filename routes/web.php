@@ -68,12 +68,18 @@ Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verifi
 });
 
 // OLT Routes
-Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']], function() {
-    Route::controller(OLTController::class)->group(function () {
+Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']], function($unique_id = null, $pembelian_id = null ) {
+    Route::controller(OLTController::class)->group(function ($unique_id = null, $pembelian_id = null ) {
         Route::get('/', 'index')->name('dataolt');
         Route::post('/tambaholt', 'tambaholt')->name('tambaholt');
         Route::get('/aksesolt', 'aksesOLT')->name('aksesolt');
         Route::get('/{id}/hapusolt', 'hapusolt')->name('hapusolt');
+        Route::post('/beliport', 'beli')->name('beliport');
+        Route::post('/beliport/{unique_id}/{pembelian_id}/{banyaknya}/prosespembayaran', 'prosespembayaran')->name('prosespembayaran');
+        Route::get('/bayar', [OLTController::class, 'bayar'])->name('bayar');
+        Route::post('/bayar/submit', [OLTController::class, 'submitPayment'])->name('payment.submit');
+
+
     });
 });
 
