@@ -67,7 +67,7 @@ return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
         ]);
         $CEKOLTIP = OLT::where('unique_id', $unique_id)
                ->where(function($query) use ($ipvpn, $portvpn) {
-                   $query->where('ipovpn', $ipvpn)
+                   $query->where('ipvpn', $ipvpn)
                          ->orWhere('portvpn', $portvpn);
                })
                ->exists();
