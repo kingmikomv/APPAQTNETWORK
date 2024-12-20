@@ -100,7 +100,7 @@ return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
                     ->equal('action', 'dst-nat')
                     ->equal('to-addresses', $ipmikrotik->ipaddress)
                     ->equal('to-ports', $portvpn)
-                    ->equal('comment', 'AQT_'. $ipmikrotik->site . '_OLT');
+                    ->equal('comment', 'AQT_'. $site . '_OLT');
         
         $natResponseOLT = $client->query($natQueryOLT)->read();
         

@@ -32,15 +32,15 @@
                             <div class="card-header">
                                 <h4 style="font-size: 20px;"><i class="fas fa-info-circle"></i> Daftar Port VPN</h4>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body table-responsive">
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 mt-3">
                                         <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
                                             data-target="#exampleModal">
                                             <i class="fas fa-shopping-cart"></i> Beli Port
                                         </button>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 mt-3">
                                         <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
                                             data-target="#bayarDisini">
                                             <i class="fas fa-shopping-cart"></i> Bayar Disini
@@ -98,7 +98,7 @@
                                                 <div class="dropdown">
                                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                                         data-toggle="dropdown" aria-expanded="false">
-                                                        Dropdown button
+                                                        Action
                                                     </button>
                                                     <div class="dropdown-menu">
                                                         <a class="dropdown-item" href="#">Action</a>
@@ -154,7 +154,17 @@
                                         <a href="http://id-1.aqtnetwork.my.id:{{ $olt->portvpn }}" target="_blank" class="btn btn-primary">Akses Cepat</a>
                                     </td>
                                     <td>
-                                        asd
+                                        <div class="dropdown">
+                                            <button class="btn btn-primary dropdown-toggle" type="button"
+                                                data-toggle="dropdown" aria-expanded="false">
+                                                Action
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#">Hapus</a>
+                                                <a class="dropdown-item" href="#">Edit</a>
+                                            </div>
+                                        </div>
+
                                     </td>
 
                                   </tr>
