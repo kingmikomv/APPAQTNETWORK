@@ -12,20 +12,33 @@ use Illuminate\Http\Request;
 
 class PenggunaController extends Controller
 {
-    public function index(){
-        $members = User::get();
+    public function index()
+{
+    $members = User::get();
 
-        foreach ($members as $member) {
-            $member->vpn = VPN::where('unique_id', $member->unique_id)->count();
-            $member->mikrotik = Mikrotik::where('unique_id', $member->unique_id)->count();
-        }
-
-        $port2 = Port::distinct('pembelian_id')  // Ambil pembelian_id yang unik
-        ->get(['pembelian_id']);  // Ambil hanya kolom pembelian_id
-        
-        //dd($port2);
-        return view('Dashboard/PENGGUNA/MEMBER/index', compact('members', 'port2'));
+    foreach ($members as $member) {
+        $member->vpn = VPN::where('unique_id', $member->unique_id)->count();
+        $member->mikrotik = Mikrotik::where('unique_id', $member->unique_id)->count();
     }
+
+    // Ambil data dengan pembelian_id yang unik dan hitung total per ID
+    $port2 = Port::select('pembelian_id', 'created_at', 'status_pembelian', 'bukti')
+        ->get()
+        ->groupBy('pembelian_id')
+        ->map(function ($group) {
+            return [
+                'pembelian_id' => $group->first()->pembelian_id,
+                'created_at' => $group->first()->created_at,
+                'status_pembelian' => $group->first()->status_pembelian,
+                'bukti' => $group->first()->bukti,
+                'total_count' => $group->count(), // Hitung jumlah pembelian_id yang sama
+                'total_price' => $group->count() * 10000, // Kalkulasi total harga
+            ];
+        });
+
+    return view('Dashboard/PENGGUNA/MEMBER/index', compact('members', 'port2'));
+}
+
     public function daftarvpn(Request $request){
         $unique_uid = $request->unique_id;
         $dataVPN = VPN::where('unique_id', $unique_uid)->get();
@@ -110,6 +123,66 @@ class PenggunaController extends Controller
         ]);
     }
 }
+// public function acc(Request $request, $pembelianId)
+// {
+//     // Cari pembelian berdasarkan ID
+//     $port = Port::where('pembelian_id', $pembelianId)->first();
+//     if (!$port) {
+//         return response()->json(['success' => false, 'message' => 'Data pembelian tidak ditemukan!'], 404);
+//     }
 
+//     // Perbarui status pembelian
+//     $port->status_pembelian = 3; // Status ACC
+//     $port->save();
+
+//     // Generate port MikroTik dimulai dari 6300
+//     do {
+//         $newPort = rand(6300, 65535); // Port diacak
+//         $isPortExists = Port::where('port', $newPort)->exists();
+//     } while ($isPortExists);
+
+//     // Simpan port MikroTik ke database
+//     $port->port = $newPort;
+//     $port->save();
+
+//     return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui dan port MikroTik telah dibuat!', 'port' => $newPort]);
+// }
+public function acc(Request $request, $pembelianId)
+{
+    // Cari semua pembelian dengan pembelian_id yang sama
+    $ports = Port::where('pembelian_id', $pembelianId)->get();
+
+    if ($ports->isEmpty()) {
+        return response()->json(['success' => false, 'message' => 'Data pembelian tidak ditemukan!'], 404);
+    }
+
+    // Inisialisasi array untuk menyimpan port yang dibuat
+    $generatedPorts = [];
+
+    foreach ($ports as $port) {
+        // Perbarui status pembelian
+        $port->status_pembelian = 3; // Status ACC
+        $port->status_port = 1;
+
+        // Generate port MikroTik dimulai dari 6300
+        do {
+            $newPort = rand(49152, 65535); // Port diacak
+            $isPortExists = Port::where('port', $newPort)->exists();
+        } while ($isPortExists);
+
+        // Simpan port MikroTik ke database
+        $port->port = $newPort;
+        $port->save();
+
+        // Tambahkan port ke array hasil
+        $generatedPorts[] = $newPort;
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Status berhasil diperbarui dan port MikroTik telah dibuat!',
+        'ports' => $generatedPorts // Kembalikan semua port yang dibuat
+    ]);
+}
 
 }

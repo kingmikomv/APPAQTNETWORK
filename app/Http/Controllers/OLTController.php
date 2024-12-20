@@ -17,9 +17,25 @@ use GuzzleHttp\Exception\ClientException;
 class OLTController extends Controller
 {
     public function index(){
-        $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
-        $oltvpn = VPN::where('unique_id', auth()->user()->unique_id)->get();
+       $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
+        $datavpn = VPN::where('unique_id', auth()->user()->unique_id)->get();
+        $portVPN = Port::where('unique_id', auth()->user()->unique_id)->where('status_pembelian', '3')->get();
+// Ambil port yang status_pembelian = 3 dan milik user yang sedang login
+$portVPNs = Port::where('unique_id', auth()->user()->unique_id)
+->where('status_pembelian', '3')
+->get();
 
+// Ambil data OLT yang sudah ada, termasuk port yang sudah digunakan
+$oltvpn = OLT::where('unique_id', auth()->user()->unique_id)->get();
+
+// Ambil port yang sudah digunakan dari data OLT
+$usedPorts = $oltvpn->pluck('portvpn')->toArray(); // Ambil portvpn yang sudah ada di OLT
+
+// Filter port yang belum digunakan
+$availablePorts = $portVPNs->filter(function ($port) use ($usedPorts) {
+return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
+});
+        
         $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
         $port = Port::where('unique_id', auth()->user()->unique_id)->orderBy('id', 'DESC')->get();
         $port2 = Port::where('unique_id', auth()->user()->unique_id)
@@ -28,7 +44,7 @@ class OLTController extends Controller
         ->get(['pembelian_id']);  // Ambil hanya kolom pembelian_id
     
 //dd($port2);  // Melihat apa yang ada di $port2
-        return view('Dashboard.OLT.index', compact('olts', 'mikrotik', 'port', 'port2', 'oltvpn'));
+        return view('Dashboard.OLT.index', compact('availablePorts', 'datavpn','olts', 'mikrotik', 'port', 'port2', 'oltvpn'));
     }
     public function tambaholt(Request $req)
 {
@@ -49,7 +65,17 @@ class OLTController extends Controller
             'user' => 'admin',
             'pass' => 'bakpao1922',
         ]);
-        
+        $CEKOLTIP = OLT::where('unique_id', $unique_id)
+               ->where(function($query) use ($ipvpn, $portvpn) {
+                   $query->where('ipovpn', $ipvpn)
+                         ->orWhere('portvpn', $portvpn);
+               })
+               ->exists();
+
+        if ($CEKOLTIP) {
+            session()->flash('error', "IP OLT atau Port VPN sudah ada");
+            return redirect()->back();
+        }
         // Validasi input
         if (empty($ipolt) || empty($portolt) || empty($site) || empty($ipvpn) || empty($portvpn)) {
             session()->flash('error', "IP OLT, Port OLT, atau Site tidak boleh kosong.");
@@ -65,24 +91,24 @@ class OLTController extends Controller
         }
 
       
-        // // Tentukan aturan NAT untuk IP OLT
-        // $natQueryOLT = new Query('/ip/firewall/nat/add');
-        // $natQueryOLT->equal('chain', 'dstnat')
-        //             ->equal('protocol', 'tcp')
-        //             ->equal('dst-port', $portvpn)
-        //             ->equal('dst-address-list', 'ip-public')
-        //             ->equal('action', 'dst-nat')
-        //             ->equal('to-addresses', $ipolt)
-        //             ->equal('to-ports', $portolt)
-        //             ->equal('comment', 'AQT_'. $site . '_OLT');
+        // Tentukan aturan NAT untuk IP OLT
+        $natQueryOLT = new Query('/ip/firewall/nat/add');
+        $natQueryOLT->equal('chain', 'dstnat')
+                    ->equal('protocol', 'tcp')
+                    ->equal('dst-port', $portvpn)
+                    ->equal('dst-address-list', 'ip-public')
+                    ->equal('action', 'dst-nat')
+                    ->equal('to-addresses', $ipmikrotik->ipaddress)
+                    ->equal('to-ports', $portvpn)
+                    ->equal('comment', 'AQT_'. $ipmikrotik->site . '_OLT');
         
-        // $natResponseOLT = $client->query($natQueryOLT)->read();
+        $natResponseOLT = $client->query($natQueryOLT)->read();
         
-        // // Cek jika ada kesalahan dalam response NAT
-        // if (isset($natResponseOLT['!trap'])) {
-        //     session()->flash('error', $natResponseOLT['!trap'][0]['message']);
-        //     return redirect()->back();
-        // }
+        // Cek jika ada kesalahan dalam response NAT
+        if (isset($natResponseOLT['!trap'])) {
+            session()->flash('error', $natResponseOLT['!trap'][0]['message']);
+            return redirect()->back();
+        }
         
         // Menyimpan data ke database
         OLT::create([
@@ -215,10 +241,11 @@ public function prosespembayaran(Request $request, $unique_id, $pembelian_id)
     $cek = User::where('unique_id', $unique_id)->first();
     // Ambil jumlah yang dibeli
     $banyaknya = $validated['banyaknya'];
-
+    //dd($banyaknya);
     // Proses logika pembayaran di sini
     // Masukkan ke database satu per satu berdasarkan jumlah yang dibeli
-    for ($i = 0; $i < $banyaknya; $i++) {
+
+    if($banyaknya == 1){
         Port::create([
             'nama' => $cek->name,
             'unique_id' => $validated['unique_id'],
@@ -226,9 +253,26 @@ public function prosespembayaran(Request $request, $unique_id, $pembelian_id)
             'status_pembelian' => '0',
             'status_port' => '0',
             'port' => null,
-            'bukti' => null
+            'bukti' => null,
+            'banyaknya' => $banyaknya,
         ]);
+    }else{
+        for ($i = 0; $i < $banyaknya; $i++) {
+        
+            Port::create([
+                'nama' => $cek->name,
+                'unique_id' => $validated['unique_id'],
+                'pembelian_id' => $validated['pembelian_id'],
+                'status_pembelian' => '0',
+                'status_port' => '0',
+                'port' => null,
+                'bukti' => null,
+                'banyaknya' => $banyaknya,
+
+            ]);
+        }
     }
+  
 
     // Redirect kembali dengan pesan sukses
     return redirect()->route('dataolt')->with('success', 'Pembayaran berhasil diproses dan data berhasil disimpan!');
@@ -254,7 +298,7 @@ public function submitPayment(Request $request)
     // Proses upload file
     if ($request->hasFile('paymentProof')) {
         $file = $request->file('paymentProof');
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        $fileName = time() . '_' . auth()->user()->unique_id. "_". $request->input('pembelian_id')."_".$file->getClientOriginalExtension();
 
         // Menyimpan file ke storage public
         $path = $file->move('payment_proofs', $fileName);
@@ -267,6 +311,7 @@ public function submitPayment(Request $request)
 
         foreach ($dataPort as $port) {
             // Update status_pembelian dan status_port untuk setiap entri
+            $port->bukti = $fileName;
             $port->status_pembelian = 2; // Update status_pembelian menjadi 1
             $port->status_port = 2; // Update status_port menjadi 1
             $port->save(); // Simpan perubahan ke database

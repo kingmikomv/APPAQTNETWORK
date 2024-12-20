@@ -135,9 +135,11 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
     });
 });
 
-Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null) {
-    Route::controller(PenggunaController::class)->group(function ($id = null) {
+Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null, $pembelianId = null) {
+    Route::controller(PenggunaController::class)->group(function ($id = null,  $pembelianId = null) {
         Route::get('/', 'index')->name('member');
+        Route::post('/acc/{pembelianId}','acc')->name('acc');
+
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
         Route::get('/daftarmikrotik', 'daftarmikrotik')->name('daftarmikrotik');
         Route::get('/daftarvpn/togglevpn', 'togglevpn')->name('togglevpn');

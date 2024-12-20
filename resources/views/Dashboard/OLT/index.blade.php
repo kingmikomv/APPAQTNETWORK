@@ -70,7 +70,7 @@
                                             <td>{{$ports->pembelian_id}}</td>
                                             <td>{{$ports->created_at->format('d M Y - H:i:s')}}</td>
                                             <td>
-                                                @if($ports->status_pembelian == 1)
+                                                @if($ports->status_pembelian == 3)
                                                 Lunas
                                                 @elseif($ports->status_pembelian == 2)
                                                 Pembayaran Sedang Di Cek
@@ -122,7 +122,7 @@
                             <div class="card-header">
                                 <h4>Tambah OLT</h4>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body table-responsive">
 
                             <button type="button" class="btn btn-primary" data-toggle="modal"
                                 data-target="#addModalOlt">
@@ -133,7 +133,7 @@
                                   <tr>
                                     <th scope="col">No</th>
                                     <th scope="col">Nama OLT</th>
-                                    <th scope="col">IP OLT:PORT OLT</th>
+                                    <th scope="col">IP OLT</th>
                                     <th scope="col">PORT VPN</th>
                                     <th scope="col">Akses Cepat</th>
                                     <th scope="col">Action</th>
@@ -148,7 +148,7 @@
                                   <tr>
                                     <th scope="row">{{$no++}}</th>
                                     <td>{{$olt->site}}</td>
-                                    <td>{{$olt->ipolt}}:{{$olt->portolt}}</td>
+                                    <td>{{$olt->ipolt}}</td>
                                     <td>{{$olt->portvpn}}</td>
                                     <td>
                                         <a href="http://id-1.aqtnetwork.my.id:{{ $olt->portvpn }}" target="_blank" class="btn btn-primary">Akses Cepat</a>
@@ -171,7 +171,7 @@
                     <div class="col-lg-6">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Data VPN OLT</h4>
+                                <h4>Data VPN</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -190,7 +190,7 @@
                                         </thead>
                                         <tbody>
                                             @php $no = 1; @endphp
-                                            @foreach($oltvpn as $vpnolt)
+                                            @foreach($datavpn as $vpnolt)
 
 
                                           <tr>
@@ -238,7 +238,7 @@
                                 <label>Jumlah Pembelian Port</label>
                                 <select class="form-control" name="banyaknya" required>
                                     <option disabled selected value="">Pilih Banyaknya</option>
-                                    @for ($i = 1; $i <= 5; $i++) <option value="{{ $i }}">{{ $i }}</option>
+                                    @for ($i = 1; $i <= 3; $i++) <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
                                 </select>
                             </div>
@@ -328,7 +328,14 @@
                             </div>
                             <div class="form-group">
                                 <label for="password">Port VPN</label>
-                                <input type="text" class="form-control" placeholder="Port VPN" name="portvpn">
+                                <select class="form-control" id="exampleFormControlSelect1" name="portvpn">
+                                    <option disabled selected value>Pilih Port VPN</option>
+                                    @forelse($availablePorts as $portvvppnn)
+                                    <option>{{$portvvppnn->port}}</option>
+                                    @empty
+                                    <option disabled selected value>Tidak Ada Port Tersisa</option>
+                                    @endforelse
+                                  </select>
                             </div>
                         
                     </div>
