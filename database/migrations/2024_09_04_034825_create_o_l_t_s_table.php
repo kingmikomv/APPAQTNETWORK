@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('unique_id')->nullable();
             $table->string('site')->nullable();
-            $table->string('ipmikrotik')->nullable();
             $table->string('ipolt')->nullable();
             $table->string('portolt')->nullable();
+            $table->string('ipvpn')->nullable();
+            $table->string('portvpn')->nullable();
 
             $table->timestamps();
         });

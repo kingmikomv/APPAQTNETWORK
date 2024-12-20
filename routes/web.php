@@ -71,6 +71,7 @@ Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verifi
 Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']], function($unique_id = null, $pembelian_id = null ) {
     Route::controller(OLTController::class)->group(function ($unique_id = null, $pembelian_id = null ) {
         Route::get('/', 'index')->name('dataolt');
+        Route::post('/uploadvpnolt', 'uploadvpnolt')->name('uploadvpnolt');
         Route::post('/tambaholt', 'tambaholt')->name('tambaholt');
         Route::get('/aksesolt', 'aksesOLT')->name('aksesolt');
         Route::get('/{id}/hapusolt', 'hapusolt')->name('hapusolt');

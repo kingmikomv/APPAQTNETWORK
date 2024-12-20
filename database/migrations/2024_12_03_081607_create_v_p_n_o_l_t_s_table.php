@@ -13,8 +13,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('v_p_n_o_l_t_s', function (Blueprint $table) {
+        Schema::create('vpnolt', function (Blueprint $table) {
             $table->id();
+            $table->string('unique_id')->nullable();
+            $table->string('namaakun')->nullable();
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
+            $table->string('ipaddress')->nullable();
+
+            /**
+             * 'unique_id' => $unique->unique_id,
+                'namaakun' => $namaakun,
+                'username' => $username,
+                'password' => $password,
+                'ipaddress' => $remoteIp,
+             * 
+             * 
+             */
             $table->timestamps();
         });
     }
@@ -26,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('v_p_n_o_l_t_s');
+        Schema::dropIfExists('vpnolt');
     }
 };

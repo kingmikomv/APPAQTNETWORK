@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('undian', function (Blueprint $table) {
             $table->id();
+            $table->string('unique_undian');
             $table->string('site');
             $table->string('hadiah');
             $table->longText('foto');
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('undians');
+        Schema::dropIfExists('undian');
     }
 };

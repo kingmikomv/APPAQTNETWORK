@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VPN;
 use RouterOS\Query;
+use App\Models\Port;
 use App\Models\User;
 use RouterOS\Client;
 use App\Models\Mikrotik;
@@ -18,8 +19,12 @@ class PenggunaController extends Controller
             $member->vpn = VPN::where('unique_id', $member->unique_id)->count();
             $member->mikrotik = Mikrotik::where('unique_id', $member->unique_id)->count();
         }
-        //dd($member->vpn);
-        return view('Dashboard/PENGGUNA/MEMBER/index', compact('members'));
+
+        $port2 = Port::distinct('pembelian_id')  // Ambil pembelian_id yang unik
+        ->get(['pembelian_id']);  // Ambil hanya kolom pembelian_id
+        
+        //dd($port2);
+        return view('Dashboard/PENGGUNA/MEMBER/index', compact('members', 'port2'));
     }
     public function daftarvpn(Request $request){
         $unique_uid = $request->unique_id;

@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class VPNOLT extends Model
 {
     use HasFactory;
+    protected $table = 'vpnolt';
+    protected $guarded = [];
 }
