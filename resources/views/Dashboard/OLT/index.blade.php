@@ -166,7 +166,7 @@
                                                 onclick="generateScript('{{ $olt->ipolt }}', '{{ $olt->portvpn }}', '{{ $olt->portolt }}')">
                                                 Lihat Script
                                              </a>
-                                                <a class="dropdown-item" href="#">Hapus</a>
+                                                <a class="dropdown-item" href="{{route('hapusolt', $olt->id)}}">Hapus</a>
                                                 <a class="dropdown-item" href="#">Edit</a>
                                             </div>
                                         </div>

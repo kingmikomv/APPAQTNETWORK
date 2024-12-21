@@ -64,17 +64,16 @@ return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
             'user' => 'admin',
             'pass' => 'bakpao1922',
         ]);
-        $CEKOLTIP = OLT::where('unique_id', $unique_id)
-               ->where(function($query) use ($ipvpn, $portvpn) {
-                   $query->where('ipvpn', $ipvpn)
-                         ->orWhere('portvpn', $portvpn);
-               })
-               ->exists();
+        // $CEKOLTIP = OLT::where('unique_id', $unique_id)
+        //        ->where(function($query) use ($ipvpn, $portvpn) {
+        //            $query->Where('portvpn', $portvpn);
+        //        })
+        //        ->exists();
 
-        if ($CEKOLTIP) {
-            session()->flash('error', "IP OLT atau Port VPN sudah ada");
-            return redirect()->back();
-        }
+        // if ($CEKOLTIP) {
+        //     session()->flash('error', "IP OLT atau Port VPN sudah ada");
+        //     return redirect()->back();
+        // }
         // Validasi input
         if (empty($ipolt) || empty($portolt) || empty($site) || empty($ipvpn) || empty($portvpn)) {
             session()->flash('error', "IP OLT, Port OLT, atau Site tidak boleh kosong.");
@@ -138,74 +137,57 @@ return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
         return view('Dashboard.OLT.olt-akses', compact('ipolt'));
     }
     public function hapusolt($id)
-{
-    try {
-        // Konfigurasi koneksi ke MikroTik
-        $client = new Client([
-            'host' => 'id-1.aqtnetwork.my.id',
-            'user' => 'admin',
-            'pass' => 'bakpao1922',
-        ]);
-
-        // Cari data OLT di database berdasarkan ID
-        $vpnData = OLT::find($id);
-
-        if (!$vpnData) {
-            session()->flash('error', "Data tidak ditemukan di database.");
+    {
+        try {
+            // Konfigurasi koneksi ke MikroTik
+            $client = new Client([
+                'host' => 'id-1.aqtnetwork.my.id',
+                'user' => 'admin',
+                'pass' => 'bakpao1922',
+            ]);
+    
+            // Cari data OLT di database berdasarkan ID
+            $vpnData = OLT::find($id);
+    
+            if (!$vpnData) {
+                session()->flash('error', "Data tidak ditemukan di database.");
+                return redirect()->back();
+            }
+    
+            // Cari aturan NAT di MikroTik berdasarkan 'to-addresses' yang sesuai dengan ipolt
+            $findNatQuery = new Query('/ip/firewall/nat/print');
+            $findNatQuery->where('dst-port', $vpnData->portvpn);
+    
+            $natRules = $client->query($findNatQuery)->read();
+    
+            // Hapus aturan NAT jika ditemukan
+            if (!empty($natRules)) {
+                foreach ($natRules as $rule) {
+                    if (isset($rule['.id'])) {
+                        $deleteNatQuery = new Query('/ip/firewall/nat/remove');
+                        $deleteNatQuery->equal('.id', $rule['.id']);
+                        $client->query($deleteNatQuery)->read();
+                    }
+                }
+                session()->flash('success', "Aturan NAT di MikroTik berhasil dihapus.");
+            } else {
+                session()->flash('warning', "Aturan NAT tidak ditemukan di MikroTik.");
+            }
+    
+           // Hapus data dari database
+           $vpnData->delete();
+    
+            session()->flash('success', "Data berhasil dihapus dari database.");
+            return redirect()->back();
+        } catch (ClientException $e) {
+            session()->flash('error', "Gagal terhubung ke MikroTik: " . $e->getMessage());
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', "Terjadi kesalahan: " . $e->getMessage());
             return redirect()->back();
         }
-
-        // Cari aturan NAT di MikroTik berdasarkan dst-port dan to-addresses
-        $findNatQuery = new Query('/ip/firewall/nat/print');
-        $findNatQuery->where('dst-port', $vpnData->portolt)
-                     ->where('to-addresses', $vpnData->ipolt);
-
-        $natRules = $client->query($findNatQuery)->read();
-
-        // Hapus aturan NAT jika ditemukan
-        if (!empty($natRules)) {
-            foreach ($natRules as $rule) {
-                if (isset($rule['.id'])) {
-                    $deleteNatQuery = new Query('/ip/firewall/nat/remove');
-                    $deleteNatQuery->equal('.id', $rule['.id']);
-                    $client->query($deleteNatQuery)->read();
-                }
-            }
-        } else {
-            session()->flash('warning', "Aturan NAT tidak ditemukan di MikroTik.");
-        }
-
-        // Cari dan hapus aturan route di MikroTik berdasarkan gateway
-        $findRouteQuery = new Query('/ip/route/print');
-        $findRouteQuery->where('gateway', $vpnData->ipmikrotik);
-
-        $routes = $client->query($findRouteQuery)->read();
-
-        if (!empty($routes)) {
-            foreach ($routes as $route) {
-                if (isset($route['.id'])) {
-                    $deleteRouteQuery = new Query('/ip/route/remove');
-                    $deleteRouteQuery->equal('.id', $route['.id']);
-                    $client->query($deleteRouteQuery)->read();
-                }
-            }
-        } else {
-            session()->flash('warning', "Aturan route tidak ditemukan di MikroTik.");
-        }
-
-        // Hapus data dari database
-        $vpnData->delete();
-
-        session()->flash('success', "Data berhasil dihapus");
-        return redirect()->back();
-    } catch (ClientException $e) {
-        session()->flash('error', "Gagal terhubung ke MikroTik: " . $e->getMessage());
-        return redirect()->back();
-    } catch (\Exception $e) {
-        session()->flash('error', "Terjadi kesalahan: " . $e->getMessage());
-        return redirect()->back();
     }
-}
+    
 public function beli(Request $request)
 {
     $namainput = $request->input('nama');
