@@ -134,6 +134,7 @@
                                     <th scope="col">No</th>
                                     <th scope="col">Nama OLT</th>
                                     <th scope="col">IP OLT</th>
+                                    <th scope="col">PORT OLT</th>
                                     <th scope="col">PORT VPN</th>
                                     <th scope="col">Akses Cepat</th>
                                     <th scope="col">Action</th>
@@ -149,6 +150,7 @@
                                     <th scope="row">{{$no++}}</th>
                                     <td>{{$olt->site}}</td>
                                     <td>{{$olt->ipolt}}</td>
+                                    <td>{{$olt->portolt}}</td>
                                     <td>{{$olt->portvpn}}</td>
                                     <td>
                                         <a href="http://id-1.aqtnetwork.my.id:{{ $olt->portvpn }}" target="_blank" class="btn btn-primary">Akses Cepat</a>
@@ -160,6 +162,10 @@
                                                 Action
                                             </button>
                                             <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#scriptModal" 
+                                                onclick="generateScript('{{ $olt->ipolt }}', '{{ $olt->portvpn }}', '{{ $olt->portolt }}')">
+                                                Lihat Script
+                                             </a>
                                                 <a class="dropdown-item" href="#">Hapus</a>
                                                 <a class="dropdown-item" href="#">Edit</a>
                                             </div>
@@ -362,6 +368,36 @@
 
 
 
+<!-- Modal for MikroTik Script -->
+<div class="modal fade" id="scriptModal" tabindex="-1" aria-labelledby="scriptModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addVpnModalLabel">Script MikroTik</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+            </div>
+            <div class="modal-body">
+                <textarea id="mikrotikScript" class="form-control" rows="10" style="width: 100%; height: 300px; resize: none;" disabled></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copy</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
         <x-dcore.footer />
     </div>
 </div>
@@ -378,6 +414,44 @@
     });
 
 </script>
+
+<script>
+      function generateScript(ipolt, portvpn, portolt) {
+        const script = `/ip firewall nat\n` +
+            `add chain=dstnat comment="generate By AQT Network"\\\n` +
+            `dst-port=${portvpn} protocol=tcp\\\n` +
+            `action=dst-nat to-addresses=${ipolt} to-ports=${portolt}`;
+        document.getElementById('mikrotikScript').value = script;
+    }
+    function hapusOlt(id) {
+        if (confirm("Apakah Anda yakin ingin menghapus OLT ini?")) {
+            // Kirim request ke server untuk menghapus OLT
+            console.log("Hapus OLT dengan ID:", id);
+        }
+    }
+
+    function editOlt(id) {
+        // Tambahkan logika untuk mengedit OLT
+        console.log("Edit OLT dengan ID:", id);
+    }
+
+    function copyToClipboard() {
+        const textarea = document.getElementById('mikrotikScript');
+        textarea.select(); // Select the text
+        textarea.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(textarea.value) // Copy the text
+            .then(() => {
+                alert('Script copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+    }
+</script>
+
+
+
+
 
 @if (session('success'))
 <script>

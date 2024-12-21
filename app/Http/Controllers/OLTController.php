@@ -11,7 +11,6 @@ use App\Models\Mikrotik;
 use App\Models\VPN;
 use App\Models\VPNOLT;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Exists;
 use GuzzleHttp\Exception\ClientException;
 
 class OLTController extends Controller
