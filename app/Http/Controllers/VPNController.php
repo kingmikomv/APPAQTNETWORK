@@ -123,7 +123,7 @@ class VPNController extends Controller
                 }
 
                 // Atur port tujuan (dstPort) yang akan digunakan
-                $dstPort = 5000;
+                $dstPort = 40001;
                 while (in_array($dstPort, $usedPorts)) {
                     $dstPort++;
                     if ($dstPort > 65535) {
