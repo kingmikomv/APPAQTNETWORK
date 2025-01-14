@@ -59,13 +59,16 @@ class MKController extends Controller
         // Handle case when there is no data for the IP address in the database
         try {
             // Attempt to connect using default MikroTik IP without port information
+            $ports = [9000, 2043, 2046, 2045, 2200];
+            foreach ($ports as $port) {
+
             $connection = new Client([
                 'host' => $ipmikrotik,
                 'user' => $username,
                 'pass' => $password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200 
+                'port' => $port
             ]);
-            
+        }
             // If connection is successful
             session()->flash('success', 'Mikrotik Terhubung');
             return redirect()->back();
@@ -82,7 +85,7 @@ class MKController extends Controller
                     'host' => 'id-1.aqtnetwork.my.id:'.$dataport->portapi,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                    'port' => 9000
 
                 ]);
     
@@ -100,7 +103,7 @@ class MKController extends Controller
                     'host' => $ipmikrotik,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                    'port' => 9000
 
                 ]);
     
@@ -189,7 +192,7 @@ public function edit($id)
             'host' => 'id-1.aqtnetwork.my.id:' . $portapi, // Menggunakan domain VPN dan port API dari data VPN
             'user' => $username,
             'pass' => $password,
-            'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+            'port' => 9000
 
         ];
 
@@ -258,7 +261,7 @@ public function edit($id)
             'host' => 'id-1.aqtnetwork.my.id:' . $portapi, // Menggunakan domain VPN dan port API dari data VPN
             'user' => $data->username,
             'pass' => $data->password,
-            'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+            'port' => 9000
 
         ];
 
@@ -384,7 +387,7 @@ public function edit($id)
 
                 'user' => $data->username,
                 'pass' => $data->password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                'port' => 9000
 
             ]);
             
@@ -421,7 +424,7 @@ public function edit($id)
             'host' => 'id-1.aqtnetwork.my.id:' . $portapi, // Menggunakan domain VPN dan port API dari data VPN
             'user' => $data->username,
             'pass' => $data->password,
-            'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+            'port' => 9000
 
             ]);
             // Query untuk mengambil waktu dari MikroTik
@@ -478,7 +481,7 @@ public function edit($id)
             'host' => 'id-1.aqtnetwork.my.id:' . $portapi, // Pastikan menggunakan IP dan port yang benar
             'user' => $data->username,
             'pass' => $data->password,
-            'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+            'port' => 9000
 
         ]);
 
@@ -542,7 +545,7 @@ public function edit($id)
                 'host' => 'id-1.aqtnetwork.my.id:' . $portapi, // Menggunakan domain VPN dan port API dari data VPN
                 'user' => $username,
                 'pass' => $password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                'port' => 9000
 
             ];
     
@@ -607,7 +610,7 @@ public function edit($id)
                 'host' => 'id-1.aqtnetwork.my.id:'.$portapi,
                 'user' => $username,
                 'pass' => $password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                'port' => 9000
 
             ];
     
@@ -691,7 +694,7 @@ public function edit($id)
                 'host' => 'id-1.aqtnetwork.my.id:'.$portapi,
                 'user' => $username,
                 'pass' => $password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                'port' => 9000
 
             ];
     
@@ -750,7 +753,7 @@ public function edit($id)
                 'host' => 'id-1.aqtnetwork.my.id:' . $portapi,
                 'user' => $data->username,
                 'pass' => $data->password,
-                'port' => 9000 ?? 2043 ?? 2046 ?? 2045 ?? 2200
+                'port' => 9000
             ]);
 
             $queryTraffic = (new Query('/interface/monitor-traffic'))
