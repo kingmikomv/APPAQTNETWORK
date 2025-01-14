@@ -48,78 +48,67 @@ class MKController extends Controller
     //  DATA DASAR MIKROTIK
     public function aksesMikrotik(Request $request)
 {
-   
     $ipmikrotik = $request->query('ipmikrotik');
     $username = $request->query('username');
     $password = $request->query('password');
 
+    // Cek data port untuk IP MikroTik di database
     $dataport = VPN::where('ipaddress', $ipmikrotik)->first();
 
-    if(is_null($dataport)) {
-        // Handle case when there is no data for the IP address in the database
+    // Jika tidak ada data port di database
+    if (is_null($dataport)) {
         try {
-            // Attempt to connect using default MikroTik IP without port information
+            // Iterasi daftar port untuk mencoba koneksi
             $ports = [9000, 2043, 2046, 2045, 2200];
             foreach ($ports as $port) {
-
-            $connection = new Client([
-                'host' => $ipmikrotik,
-                'user' => $username,
-                'pass' => $password,
-                'port' => $port
-            ]);
-        
-            // If connection is successful
-            session()->flash('success', 'Mikrotik Terhubung');
-            return redirect()->back();
-        }
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to connect to MikroTik router : ' . $e->getMessage());
-            return redirect()->back();
-        }
-    } else {
-        // Case where database entry exists for the IP
-        if(is_null($dataport->portapi) == false){
-            try {
-                // Connect with port information from the database
-                $connection = new Client([
-                    'host' => 'id-1.aqtnetwork.my.id:'.$dataport->portapi,
-                    'user' => $username,
-                    'pass' => $password,
-                    'port' => 9000
-
-                ]);
-    
-                // If connection is successful
-                session()->flash('success', 'Mikrotik Terhubung');
-                return redirect()->back();
-            } catch (\Exception $e) {
-                session()->flash('error', 'Failed to connect to MikroTik router :  ' . $e->getMessage());
-                return redirect()->back();
-            }
-        } else {
-            try {
-                // Connect using the IP without port information
                 $connection = new Client([
                     'host' => $ipmikrotik,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 9000
-
+                    'port' => $port
                 ]);
-    
-                // If connection is successful
-                session()->flash('success', 'Mikrotik Terhubung tanpa port dari database');
-                return redirect()->back();
-            } catch (\Exception $e) {
-                session()->flash('error', 'Failed to connect to MikroTik router: ' . $e->getMessage());
+
+                // Jika koneksi berhasil, beri pesan sukses
+                session()->flash('success', "Mikrotik Terhubung pada port $port");
                 return redirect()->back();
             }
+        } catch (\Exception $e) {
+            // Jika semua port gagal
+            session()->flash('error', 'Gagal terhubung ke MikroTik router: ' . $e->getMessage());
+            return redirect()->back();
+        }
+    } else {
+        // Jika data port ada di database
+        try {
+            $portFromDb = $dataport->portapi;
+
+            if (!is_null($portFromDb)) {
+                // Jika port tersedia di database
+                $connection = new Client([
+                    'host' => $ipmikrotik,
+                    'user' => $username,
+                    'pass' => $password,
+                    'port' => $portFromDb
+                ]);
+                session()->flash('success', "Mikrotik Terhubung dengan port $portFromDb dari database");
+            } else {
+                // Jika port tidak tersedia di database, gunakan port default
+                $connection = new Client([
+                    'host' => $ipmikrotik,
+                    'user' => $username,
+                    'pass' => $password,
+                    'port' => 9000 // Port default
+                ]);
+                session()->flash('success', 'Mikrotik Terhubung tanpa port dari database');
+            }
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal terhubung ke MikroTik router: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
-    
-    
 }
+
 public function edit($id)
     {
         $mikrotik = Mikrotik::find($id);
