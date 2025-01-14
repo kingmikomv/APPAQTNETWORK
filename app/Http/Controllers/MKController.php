@@ -68,10 +68,11 @@ class MKController extends Controller
                 'pass' => $password,
                 'port' => $port
             ]);
-        }
+        
             // If connection is successful
             session()->flash('success', 'Mikrotik Terhubung');
             return redirect()->back();
+        }
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to connect to MikroTik router : ' . $e->getMessage());
             return redirect()->back();
