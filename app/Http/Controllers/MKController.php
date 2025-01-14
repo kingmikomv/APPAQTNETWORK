@@ -63,7 +63,7 @@ class MKController extends Controller
                 'host' => $ipmikrotik,
                 'user' => $username,
                 'pass' => $password,
-                'port' => 2043
+                'port' => 9000
             ]);
             
             // If connection is successful
@@ -82,7 +82,7 @@ class MKController extends Controller
                     'host' => 'id-1.aqtnetwork.my.id:'.$dataport->portapi,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 2043
+                    'port' => 4023
 
                 ]);
     
@@ -100,7 +100,7 @@ class MKController extends Controller
                     'host' => $ipmikrotik,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 2043
+                    'port' => 9000
 
                 ]);
     
