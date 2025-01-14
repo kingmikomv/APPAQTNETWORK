@@ -63,7 +63,7 @@ class MKController extends Controller
                 'host' => $ipmikrotik,
                 'user' => $username,
                 'pass' => $password,
-                'port' => 9000 ?? 2043,
+                'port' => 9000
             ]);
             
             // If connection is successful
