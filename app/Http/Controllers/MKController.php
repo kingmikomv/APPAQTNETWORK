@@ -55,7 +55,7 @@ class MKController extends Controller
         $password = $request->query('password');
     
         // Daftar port yang akan diuji koneksi
-        $availablePorts = [9000, 2043, 2046, 2045, 2200];
+        $availablePorts = [2043, 9000, 2046, 2045, 2200];
     
         $dataport = VPN::where('ipaddress', $ipmikrotik)->first();
     
