@@ -82,7 +82,7 @@ class MKController extends Controller
                     'host' => 'id-1.aqtnetwork.my.id:'.$dataport->portapi,
                     'user' => $username,
                     'pass' => $password,
-                    'port' => 4023
+                    'port' => 9000
 
                 ]);
     
