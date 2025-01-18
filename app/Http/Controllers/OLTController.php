@@ -8,6 +8,7 @@ use RouterOS\Query;
 use App\Models\Port;
 use App\Models\User;
 use RouterOS\Client;
+use App\Models\Paket;
 use App\Models\VPNOLT;
 use App\Models\Mikrotik;
 use Illuminate\Http\Request;
@@ -19,35 +20,27 @@ class OLTController extends Controller
     public function index()
     {
         $coin = CoinTransaction::where('user_id', auth()->id())->where('status', 'completed')->get();
-//dd($coin);
-        $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
         $datavpn = VPN::where('unique_id', auth()->user()->unique_id)->get();
-        $portVPN = Port::where('unique_id', auth()->user()->unique_id)->where('status_pembelian', '3')->get();
-        // Ambil port yang status_pembelian = 3 dan milik user yang sedang login
-        $portVPNs = Port::where('unique_id', auth()->user()->unique_id)
-            ->where('status_pembelian', '3')
-            ->get();
-
-        // Ambil data OLT yang sudah ada, termasuk port yang sudah digunakan
-        $oltvpn = OLT::where('unique_id', auth()->user()->unique_id)->get();
-
-        // Ambil port yang sudah digunakan dari data OLT
-        $usedPorts = $oltvpn->pluck('portvpn')->toArray(); // Ambil portvpn yang sudah ada di OLT
-
-        // Filter port yang belum digunakan
-        $availablePorts = $portVPNs->filter(function ($port) use ($usedPorts) {
-            return !in_array($port->port, $usedPorts); // Cek jika port belum terpakai
-        });
-
         $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
-        $port = Port::where('unique_id', auth()->user()->unique_id)->orderBy('id', 'DESC')->get();
-        $port2 = Port::where('unique_id', auth()->user()->unique_id)
-            ->whereNotIn('status_pembelian', [1, 2])  // Filter berdasarkan status_pembelian
-            ->distinct('pembelian_id')  // Ambil pembelian_id yang unik
-            ->get(['pembelian_id']);  // Ambil hanya kolom pembelian_id
 
-        //dd($port2);  // Melihat apa yang ada di $port2
-        return view('Dashboard.OLT.index', compact('availablePorts', 'datavpn', 'olts', 'mikrotik', 'port', 'port2', 'oltvpn', 'coin'));
+        // Ambil semua port dari OLT
+        $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
+
+
+        $uniqueId = auth()->user()->unique_id;
+
+        // Ambil semua port dari PaketCoin
+        $allPorts = Paket::where('unique_id', $uniqueId)->pluck('port')->toArray();
+    
+        // Ambil semua port yang sudah disimpan di PortOLT
+        $usedPorts = OLT::where('unique_id', $uniqueId)->pluck('portvpn')->toArray();
+    
+        // Hitung port yang belum digunakan (port yang ada di PaketCoin tetapi belum di PortOLT)
+        $availablePorts = array_diff($allPorts, $usedPorts);
+
+        //dd($availablePorts);
+
+        return view('Dashboard.OLT.index', compact('datavpn', 'mikrotik', 'coin', 'availablePorts', 'olts'));
     }
     public function tambaholt(Request $req)
     {

@@ -310,11 +310,13 @@
                                 <label for="password">Port VPN</label>
                                 <select class="form-control" id="exampleFormControlSelect1" name="portvpn">
                                     <option disabled selected value>Pilih Port VPN</option>
-                                    @forelse($availablePorts as $portvvppnn)
-                                        <option>{{ $portvvppnn->port }}</option>
-                                    @empty
-                                        <option disabled selected value>Tidak Ada Port Tersisa</option>
-                                    @endforelse
+                                    @foreach ($availablePorts as $portvvppnn)
+        @if(is_object($portvvppnn) && isset($portvvppnn->port))
+            <option value="{{ $portvvppnn->port }}">{{ (int) $portvvppnn->port }}</option>
+        @elseif(is_string($portvvppnn))
+            <option value="{{ $portvvppnn }}">{{ (int) $portvvppnn }}</option>
+        @endif
+    @endforeach
                                 </select>
                             </div>
 
