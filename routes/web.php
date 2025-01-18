@@ -6,9 +6,10 @@ use App\Http\Controllers\IPController;
 use App\Http\Controllers\MKController;
 use App\Http\Controllers\OLTController;
 use App\Http\Controllers\VPNController;
+use App\Http\Controllers\CoinController;
 use App\Http\Controllers\DepanController;
-use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\UndianController;
+use App\Http\Controllers\PenggunaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,6 +80,15 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
         Route::post('/beliport/{unique_id}/{pembelian_id}/{banyaknya}/prosespembayaran', 'prosespembayaran')->name('prosespembayaran');
         Route::get('/bayar', [OLTController::class, 'bayar'])->name('bayar');
         Route::post('/bayar/submit', [OLTController::class, 'submitPayment'])->name('payment.submit');
+        Route::post('/purchase-coin', [CoinController::class, 'purchase'])->name('purchase.coin');
+        Route::get('/coin-history', [CoinController::class, 'history'])->name('coin.history');
+        Route::post('/cancel-transaction/{id}', [CoinController::class, 'cancelTransaction'])->name('transaction.cancel');
+        Route::get('/process-payment/{id}/process', [CoinController::class, 'processPayment'])->name('payment.process');
+        Route::get('/process-payment/{id}/process/bank', [CoinController::class, 'bank'])->name('bank.transfer');
+        Route::post('/process-payment/{id}/process/bank/upload', [CoinController::class, 'upload'])->name('bank.upload');
+
+        Route::get('/beli/{paket}', [CoinController::class, 'beliPaket'])->name('beli.paket');
+
 
 
     });
@@ -138,7 +148,9 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
 Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null, $pembelianId = null) {
     Route::controller(PenggunaController::class)->group(function ($id = null,  $pembelianId = null) {
         Route::get('/', 'index')->name('member');
-        Route::post('/acc/{pembelianId}','acc')->name('acc');
+        Route::get('/acc/{id}/yes','acc')->name('acc');
+        //Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
+
 
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
         Route::get('/daftarmikrotik', 'daftarmikrotik')->name('daftarmikrotik');

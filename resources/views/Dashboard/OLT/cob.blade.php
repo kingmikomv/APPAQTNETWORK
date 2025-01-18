@@ -1,16 +1,18 @@
+<!-- your-view.blade.php -->
 <x-dcore.head />
-
 <div id="app">
     <div class="main-wrapper main-wrapper-1">
         <div class="navbar-bg"></div>
         <x-dcore.nav />
         <x-dcore.sidebar />
+        <x-dcore.modal />
+
         <div class="main-content">
             <section class="section">
-                <!-- MAIN OF CENTER CONTENT -->
-                <div class="row no-gutters"> <!-- Remove gutter space between columns -->
-                    <!-- Welcome Card -->
-                    {{-- <div class="col-lg-12">
+                <!-- MAIN CONTENT -->
+                <div class="row">
+                    <!-- Pemberitahuan Section -->
+                    <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
                                 <h4 style="font-size: 20px;"><i class="fas fa-info-circle"></i> Pemberitahuan</h4>
@@ -24,137 +26,95 @@
                                     untuk pemasangan VPN pada OLT anda</p>
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4 style="font-size: 20px;"><i class="fas fa-coins"></i> Beli Coin</h4>
+                                <h4 style="font-size: 20px;"><i class="fas fa-info-circle"></i> Daftar Port VPN</h4>
                             </div>
-                            <div class="card-body">
-                                <!-- Display User's Current Coins -->
-                                <div class="alert alert-primary d-flex align-items-center" role="alert"
-                                    style="font-size: 1rem;">
-                                    <i class="fas fa-coins"
-                                        style="color: #ffc107; font-size: 1.5rem; margin-right: 10px;"></i>
-                                    <div>
-                                        <strong>Jumlah Coin Anda Saat Ini:</strong>
-                                        <span style="font-weight: bold; font-size: 1.2rem;">
-                                            {{ auth()->user()->total_coin }} Coin</span>
+                            <div class="card-body table-responsive">
+                                <div class="row">
+                                    <div class="col-md-6 mt-3">
+                                        <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                                            data-target="#exampleModal">
+                                            <i class="fas fa-shopping-cart"></i> Beli Port
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 mt-3">
+                                        <button type="button" class="btn btn-primary btn-block" data-toggle="modal"
+                                            data-target="#bayarDisini">
+                                            <i class="fas fa-shopping-cart"></i> Bayar Disini
+                                        </button>
                                     </div>
                                 </div>
 
-                                <a class="btn btn-primary btn-block" data-toggle="collapse" href="#coins"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
-                                    <i class="fas fa-coins"></i> Beli Coin
-                                </a>
-                                <div class="collapse" id="coins">
-                                    <div class="card card-body">
-                                        <form id="purchaseCoinsForm" method="POST"
-                                            action="{{ route('purchase.coin') }}">
-                                            @csrf
-                                            <div class="form-group">
-                                                <label for="Coins" style="font-weight: bold;">Pilih Jumlah
-                                                    Coin</label>
-                                                <select name="coin_amount" id="Coins" class="form-control">
-                                                    <option value="5">5 Coin - Rp10,500</option>
-                                                    <option value="10">10 Coin - Rp21,000</option>
-                                                    <option value="20">20 Coin - Rp39,500</option>
-                                                    <option value="50">50 Coin - Rp97,000</option>
-                                                    <option value="100">100 Coin - Rp152,500</option>
-                                                    <option value="200">200 Coin - Rp295,000</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <button type="submit" class="btn btn-primary btn-block">
-                                                            <i class="fas fa-shopping-cart"></i> Beli Coin
+                                <table class="table" id="oltTable2">
+                                    <thead>
+                                        <tr>
+                                            <td>No</td>
+                                            <td>ID Pembelian</td>
+                                            <td>Tanggal Pemesanan</td>
+                                            <td>Status Pembelian</td>
+                                            <td>Status Port</td>
+                                            <td>Port</td>
+                                            <td>Option</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php $no = 1; @endphp
+                                        @foreach ($port as $ports)
+                                            <tr>
+                                                <td>{{ $no++ }}</td>
+                                                <td>{{ $ports->pembelian_id }}</td>
+                                                <td>{{ $ports->created_at->format('d M Y - H:i:s') }}</td>
+                                                <td>
+                                                    @if ($ports->status_pembelian == 3)
+                                                        Lunas
+                                                    @elseif($ports->status_pembelian == 2)
+                                                        Pembayaran Sedang Di Cek
+                                                    @else
+                                                        Belum Di Bayar
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($ports->status_port == 1)
+                                                        Running
+                                                    @elseif($ports->status_port == 2)
+                                                        Pembayaran Sedang Di Cek
+                                                    @else
+                                                        Belum Di Bayar
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($ports->port == null)
+                                                        ******
+                                                    @else
+                                                        {{ $ports->port ?? 'Belum Di Bayar' }}
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                            data-toggle="dropdown" aria-expanded="false">
+                                                            Action
                                                         </button>
+                                                        <div class="dropdown-menu">
+                                                            <a class="dropdown-item" href="#">Action</a>
+                                                            <a class="dropdown-item" href="#">Another action</a>
+                                                            <a class="dropdown-item" href="#">Something else
+                                                                here</a>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <a class="btn btn-primary btn-block"
-                                                            href="{{ route('coin.history') }}">
-                                                            <i class="fas fa-history"></i> Riwayat Pembelian Coin
-                                                        </a>
-                                                    </div>
-                                                </div>
 
-                                            </div>
-                                        </form>
+                                                </td>
 
-                                    </div>
-                                </div>
-
-                                <!-- Purchase Coins Form -->
-
-
-
-
-                                <a class="btn btn-warning btn-block mt-3" data-toggle="collapse" href="#collapseExample"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
-                                    <i class="fas fa-network-wired"></i> Beli Port OLT
-                                </a>
-                                <div class="collapse" id="collapseExample">
-                                    <div class="card card-body">
-                                        <div class="row">
-                                            <!-- Paket Per Bulan -->
-                                            <div class="col-md-4">
-                                                <div class="card border-primary shadow-sm">
-                                                    <div class="card-header bg-primary text-white text-center">
-                                                        <h5>Paket Per Bulan</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>20 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: 30 Hari</p>
-                                                        <button class="btn btn-primary btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'bulan']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Paket Per Tahun -->
-                                            <div class="col-md-4">
-                                                <div class="card border-success shadow-sm">
-                                                    <div class="card-header bg-success text-white text-center">
-                                                        <h5>Paket Per Tahun</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>60 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: 12 Bulan</p>
-                                                        <button class="btn btn-success btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'tahun']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Paket Permanen -->
-                                            <div class="col-md-4">
-                                                <div class="card border-danger shadow-sm">
-                                                    <div class="card-header bg-danger text-white text-center">
-                                                        <h5>Paket Permanen</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>250 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: Selamanya</p>
-                                                        <button class="btn btn-danger btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'permanen']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-
                     <!-- Form to Add VPN -->
                     <div class="col-lg-6">
                         <div class="card">
@@ -261,14 +221,94 @@
                             </div>
                         </div>
                     </div>
-
-
                 </div>
-                <!-- END OF CENTER CONTENT -->
+                <!-- END MAIN CONTENT -->
             </section>
         </div>
-        <x-dcore.footer />
-        
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Beli Port</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('beliport') }}" method="post">
+                        @csrf
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>ID Pembeli</label>
+                                <input type="text" name="nama" class="form-control"
+                                    value="{{ auth()->user()->unique_id }}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Jumlah Pembelian Port</label>
+                                <select class="form-control" name="banyaknya" required>
+                                    <option disabled selected value="">Pilih Banyaknya</option>
+                                    @for ($i = 1; $i <= 3; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Checkout!</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="bayarDisini" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Bayar Disini</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('bayar') }}" method="get">
+
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>ID Pembelian</label>
+                                <select class="form-control" name="pembelian_id" required>
+                                    <option disabled selected value="">Pilih ID Pembayaran</option>
+                                    @foreach ($port2 as $ports2)
+                                        @if ($ports2->status_pembelian != 1 && $ports2->status_pembelian != 2)
+                                            <option value="{{ $ports2->pembelian_id }}">
+                                                {{ $ports2->pembelian_id }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Checkout!</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+
 
         <div class="modal fade" id="addModalOlt" tabindex="-1" role="dialog" aria-labelledby="addVpnModalLabel"
             aria-hidden="true">
@@ -355,6 +395,84 @@
             </div>
         </div>
 
+
+
+
+
+
+
+
+
+
+        <x-dcore.footer />
     </div>
 </div>
+
+
 <x-dcore.script />
+<!-- DataTables Script -->
+<script>
+    $(document).ready(function() {
+        $('#oltTable').DataTable();
+        $('#oltTable2').DataTable();
+        $('#oltTable3').DataTable();
+
+    });
+</script>
+
+<script>
+    function generateScript(ipolt, portvpn, portolt) {
+        const script = `/ip firewall nat\n` +
+            `add chain=dstnat comment="generate By AQT Network"\\\n` +
+            `dst-port=${portvpn} protocol=tcp\\\n` +
+            `action=dst-nat to-addresses=${ipolt} to-ports=${portolt}`;
+        document.getElementById('mikrotikScript').value = script;
+    }
+
+    function hapusOlt(id) {
+        if (confirm("Apakah Anda yakin ingin menghapus OLT ini?")) {
+            // Kirim request ke server untuk menghapus OLT
+            console.log("Hapus OLT dengan ID:", id);
+        }
+    }
+
+    function editOlt(id) {
+        // Tambahkan logika untuk mengedit OLT
+        console.log("Edit OLT dengan ID:", id);
+    }
+
+    function copyToClipboard() {
+        const textarea = document.getElementById('mikrotikScript');
+        textarea.select(); // Select the text
+        textarea.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(textarea.value) // Copy the text
+            .then(() => {
+                alert('Script copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+    }
+</script>
+
+
+
+
+
+@if (session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: '{{ session('success') }}',
+            showConfirmButton: true
+        });
+    </script>
+@elseif (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: '{{ session('error') }}',
+            showConfirmButton: true
+        });
+    </script>
+@endif

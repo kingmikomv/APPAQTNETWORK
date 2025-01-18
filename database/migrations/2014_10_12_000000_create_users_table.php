@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->unsignedBigInteger('total_coin')->default(5); // Menambahkan kolom total_coin
             $table->rememberToken();
             $table->timestamps();
         });

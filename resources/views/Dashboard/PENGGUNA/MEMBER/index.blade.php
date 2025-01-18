@@ -62,62 +62,58 @@
                     <div class="col-lg-12"> <!-- Full width column -->
                         <div class="card">
                             <div class="card-body text-center table-responsive">
-                                <table class="table" id="tableMember2">
+                                <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <td>No</td>
-                                            <td>ID Pembeli</td>
-                                            <td>Tanggal Pemesanan</td>
-                                            <td>Status Bukti</td>
-                                            <td>Total Pesanan</td>
-                                            <td>Total Harga</td>
-                                            <td>OPT</td>
+                                            <th>No</th>
+                                            <th>Nama Pengguna</th>
+                                            <th>Waktu Checkout</th>
+                                            <th>Total Harga</th>
+                                            <th>Total Coin</th>
+                                            <th>Status Bukti Pembayaran</th>
+                                            <th>Lihat Bukti Pembayaran</th>
+                                            <th>Option</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @php $no = 1; @endphp
-                                        @foreach ($port2 as $pt)
+                                        @foreach ($summary as $p)
                                         <tr>
-                                            <td>{{ $no++ }}</td>
-                                            <td>{{ $pt['pembelian_id'] }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($pt['created_at'])->format('d M Y - H:i:s') }}</td>
+                                            <td>{{$no++}}</td>
+                                            <td>{{$p->user->name}}</td>
+                                            <td>{{$p->created_at}}</td>
+                                            <td>Rp{{number_format($p->price, 0, ',', '.')}}</td>
+                                            <td>{{$p->coin_amount}}</td>
                                             <td>
-                                                @if($pt['status_pembelian'] == 2 && $pt['bukti'] !== null)
-                                                Bukti Sudah Dikirim
-                                                @elseif($pt['status_pembelian'] == 3 && $pt['bukti'] !== null)
-                                                Lunas
+                                                @if(!empty($p->payment_proof))
+                                                    <span class="badge badge-success">Sudah Dibayar</span>
                                                 @else
-                                                Bukti Belum Dikirim
+                                                    <span class="badge badge-danger">Belum Dibayar</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $pt['total_count'] }}</td>
-                                            <td>Rp. {{ number_format($pt['total_price'], 0, ',', '.') }}</td>
                                             <td>
-                                                <div class="dropdown">
-                                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                                        Option
-                                                    </button>
-                                                    <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="#" 
-                                                           data-toggle="modal" 
-                                                           data-target="#modalBuktiPembayaran" 
-                                                           data-bukti="{{ isset($pt['bukti']) && $pt['bukti'] ? asset('payment_proofs/' . $pt['bukti']) : '' }}">
-                                                            <i class="fas fa-eye"></i> Lihat Bukti Pembayaran
-                                                        </a>
-                                                        <a class="dropdown-item acc-button" href="#" 
-                                                        data-pembelian-id="{{ $pt['pembelian_id'] }}" 
-                                                        data-route="{{ route('acc', ['pembelianId' => ':id']) }}">
-                                                        <i class="fas fa-eye"></i> ACC
-                                                     </a>
-                                                     
-                                                    </div>
-                                                </div>
+                                                @if(!empty($p->payment_proof))
+                                                <a class="btn btn-primary" href="{{ asset('pembayaran/' . $p->payment_proof) }}" target="_blank" rel="noopener noreferrer">
+                                                    <i class="fas fa-eye"></i> Lihat Bukti Pembayaran
+                                                </a>
+                                            @else
+                                                <span class="text-muted">Tidak ada bukti pembayaran</span>
+                                            @endif
+                                            
+                                            </td>
+                                            <td>
+                                                @if($p->status == 'pending' || !empty($p->payment_proof))
+                                                <a href="{{route('acc', $p->id)}}" class="btn btn-primary">ACC</a>
+                                                @elseif($p->status == 'completed')
+                                                <a href="" class="btn btn-success" disabled>Sukses</a>
+                                                @elseif($p->status == 'failed')
+                                                <a href="" class="btn btn-danger"></a>
+                                                @endif
+
                                             </td>
                                         </tr>
                                         @endforeach
-                                    </tbody>
                                 </table>
-                                
                             </div>
                         </div>
                     </div>
@@ -128,34 +124,6 @@
             </section>
             
         </div>
-
-
-
-        <div class="modal fade" id="modalBuktiPembayaran" tabindex="-1" role="dialog" aria-labelledby="modalBuktiPembayaranLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalBuktiPembayaranLabel">Bukti Pembayaran</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <!-- Gambar -->
-                        <img id="buktiPembayaranImage" src="" alt="Bukti Pembayaran" class="img-fluid d-none">
-                        <!-- Pesan jika tidak ada bukti -->
-                        <p id="buktiPembayaranMessage" class="d-none">Belum Ada Bukti Pembayaran</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-
-
-
 
 
 
@@ -192,42 +160,4 @@
         });
     });
 
-</script>
-<script>
-    $(document).on('click', '.acc-button', function (e) {
-        e.preventDefault();
-        let pembelianId = $(this).data('pembelian-id');
-        let route = $(this).data('route').replace(':id', pembelianId);
-
-        Swal.fire({
-            title: 'Konfirmasi',
-            text: 'Apakah Anda yakin ingin meng-ACC pembelian ini?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, ACC',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Lakukan AJAX request ke backend
-                $.ajax({
-                    url: route,
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire('Berhasil!', response.message, 'success');
-                            location.reload(); // Refresh halaman untuk memperbarui data
-                        } else {
-                            Swal.fire('Gagal!', response.message, 'error');
-                        }
-                    },
-                    error: function (xhr) {
-                        Swal.fire('Gagal!', xhr.responseJSON.message, 'error');
-                    }
-                });
-            }
-        });
-    });
 </script>
