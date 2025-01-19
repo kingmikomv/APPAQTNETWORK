@@ -19,7 +19,9 @@ class CreateCoinTransactionsTable extends Migration
             $table->integer('coin_amount'); // Jumlah coin yang dibeli
             $table->decimal('price', 10); // Harga pembelian
             $table->string('status')->default('pending'); // Status transaksi (pending/complete/failed)
-            $table->longText('payment_proof')->nullable(); // Catatan transaksi
+            $table->longText('invoice_url')->nullable(); // Catatan transaksi
+            $table->string('external_id')->unique()->nullable(); // UUID untuk transaksi
+
             $table->timestamps();
             
             // Foreign key constraint (Opsional)

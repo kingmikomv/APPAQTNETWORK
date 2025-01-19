@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\OLT;
 use App\Models\VPN;
 use RouterOS\Query;
@@ -19,29 +20,75 @@ class OLTController extends Controller
 {
     public function index()
     {
-        $coin = CoinTransaction::where('user_id', auth()->id())->where('status', 'completed')->get();
+        $coin = CoinTransaction::where('user_id', auth()->id())
+            ->where('status', 'completed')
+            ->get();
+
         $datavpn = VPN::where('unique_id', auth()->user()->unique_id)->get();
         $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
-
-        // Ambil semua port dari OLT
-        $olts = OLT::where('unique_id', auth()->user()->unique_id)->get();
-
-
         $uniqueId = auth()->user()->unique_id;
 
-        // Ambil semua port dari PaketCoin
+        // Ambil semua OLT
+        $olts = OLT::where('unique_id', $uniqueId)->get();
+
+        // Map data OLT dan tambahkan data Paket
+        $olts = $olts->map(function ($oltp) {
+            $paket = Paket::where('port', $oltp->portvpn)->first();
+            $oltp->paket = $paket ? $paket->paket : 'Tidak Ditemukan';
+            $oltp->expire = $paket ? $paket->expire : 'Tidak Ditemukan';
+            $oltp->coin = $paket ? $paket->coin : 'Tidak Ditemukan';
+
+            return $oltp; // Return as the original Eloquent object
+        });
+
+        // Ambil semua port dari Paket
         $allPorts = Paket::where('unique_id', $uniqueId)->pluck('port')->toArray();
-    
-        // Ambil semua port yang sudah disimpan di PortOLT
+
+        // Ambil semua port yang sudah digunakan di OLT
         $usedPorts = OLT::where('unique_id', $uniqueId)->pluck('portvpn')->toArray();
-    
-        // Hitung port yang belum digunakan (port yang ada di PaketCoin tetapi belum di PortOLT)
+
+        // Hitung port yang belum digunakan
         $availablePorts = array_diff($allPorts, $usedPorts);
 
-        //dd($availablePorts);
+
+
+
+        foreach ($olts as $olt) {
+            // Cek apakah tanggal expire sudah lewat
+            if ($olt->expire !== null && Carbon::parse($olt->expire)->isPast()) {
+                try {
+                    // Koneksi ke MikroTik
+                    $client = new Client([
+                        'host' => 'id-1.aqtnetwork.my.id',
+                        'user' => 'admin',
+                        'pass' => 'bakpao1922',
+                    ]);
+
+                    // Cari NAT rule berdasarkan comment dan to-ports
+                    $query = new Query('/ip/firewall/nat/print');
+                    $query->where('comment', 'AQT_' . $olt->site . '_OLT')
+                        ->where('to-ports', $olt->portvpn);
+                    $rules = $client->query($query)->read();
+
+                    foreach ($rules as $rule) {
+                        // Disable rule jika expired
+                        $disableQuery = new Query('/ip/firewall/nat/set');
+                        $disableQuery->equal('.id', $rule['.id'])
+                            ->equal('disabled', 'yes');
+                        $client->query($disableQuery)->read();
+                    }
+                } catch (\Exception $e) {
+                    // Tangani error jika koneksi MikroTik gagal
+                    session()->flash('error', 'Gagal menonaktifkan NAT: ' . $e->getMessage());
+                }
+            }
+        }
+
+
 
         return view('Dashboard.OLT.index', compact('datavpn', 'mikrotik', 'coin', 'availablePorts', 'olts'));
     }
+
     public function tambaholt(Request $req)
     {
         $ipolt = $req->input('ipolt');
@@ -52,7 +99,7 @@ class OLTController extends Controller
 
         $unique_id = auth()->user()->unique_id;
 
-        //dd($ipolt, $ipvpn, $portvpn);
+        //dd($site, $ipolt ,$ipolt, $ipvpn, $portvpn);
 
         try {
             // Konfigurasi koneksi ke MikroTik
@@ -116,6 +163,27 @@ class OLTController extends Controller
                 'site' => $site,
             ]);
 
+            $paket = Paket::where('port', $portvpn)->first();
+            if ($paket) {
+                // Default durasi adalah 1 bulan
+                $expireDate = $paket->created_at->addMonth();
+
+                // Jika durasi adalah "tahunan" (berdasarkan $paket->durasi)
+                if (isset($paket->paket)) {
+                    if (strtolower($paket->paket) === 'tahun') {
+                        $expireDate = $paket->created_at->addYear();
+                    } elseif (strtolower($paket->paket) === 'bulan') {
+                        $expireDate = $paket->created_at->addMonth();
+                    } elseif (strtolower($paket->paket) === 'permanen') {
+                        $expireDate = null;
+                    }
+                }
+
+                //dd($expireDate);
+                // // Update expire di database
+                $paket->expire = $expireDate;
+                $paket->save();
+            }
             session()->flash('success', "Konfigurasi OLT Berhasil Ditambahkan !");
             return redirect()->back();
         } catch (ClientException $e) {

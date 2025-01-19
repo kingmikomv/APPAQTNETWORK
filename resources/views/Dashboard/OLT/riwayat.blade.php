@@ -26,7 +26,6 @@
                                                     <th>Harga</th>
                                                     <th>Status</th>
                                                     <th>Tanggal</th>
-                                                    <th>Bukti</th>
                                                     <th>Option</th>
                                                 </tr>
                                             </thead>
@@ -37,7 +36,7 @@
                                                         <td>{{ $transaction->coin_amount }} Coin</td>
                                                         <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if ($transaction->status === 'pending' || $transaction->payment_method !== null)
+                                                            @if ($transaction->status == 'pending')
                                                                 <span class="badge bg-warning">Pending / Checking</span>
                                                             @elseif ($transaction->status === 'complete')
                                                                 <span class="badge bg-success">Selesai</span>
@@ -46,31 +45,27 @@
                                                             @endif
                                                         </td>
                                                         <td>{{ $transaction->created_at->format('d M Y, H:i') }}</td>
-                                                        <td>
-                                                            @if ($transaction->payment_proof !== null)
-                                                                <a href="{{ asset('pembayaran/' . $transaction->payment_proof) }}" target="_blank">Lihat Bukti</a>
-                                                            @else
-                                                                -
-                                                            @endif
-                                                        </td>
+                                                       
                                                         <td>
                                                             <div class="dropdown">
-                                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                                <button class="btn btn-primary dropdown-toggle"
+                                                                    type="button" data-toggle="dropdown"
+                                                                    aria-expanded="false">
                                                                     Action
                                                                 </button>
                                                                 <div class="dropdown-menu">
                                                                     <!-- Tombol Bayar untuk membuka modal -->
-                                                                  
-                                                                    <a class="dropdown-item" href="{{route('payment.process', $transaction->id)}}">
-                                                                        Bayar
-                                                                    </a>
-                                                                    
+
+                                                                    @if ($transaction->status == 'pending')
+                                                                        <a class="dropdown-item"
+                                                                            href="{{ route('payment.process', $transaction->id) }}">
+                                                                            Bayar
+                                                                        </a>
+                                                                    @endif
+
+
                                                                     <!-- Form untuk cancel transaksi -->
-                                                                    <form action="{{ route('transaction.cancel', $transaction->id) }}" method="POST">
-                                                                        @csrf
-                                                                        @method('POST')
-                                                                        <a class="dropdown-item" onclick="return confirm('Apakah Anda yakin ingin membatalkan transaksi ini?')">Cancel</a>
-                                                                    </form>
+                                                                    
                                                                 </div>
                                                             </div>
                                                         </td>

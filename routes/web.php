@@ -9,6 +9,7 @@ use App\Http\Controllers\VPNController;
 use App\Http\Controllers\CoinController;
 use App\Http\Controllers\DepanController;
 use App\Http\Controllers\UndianController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PenggunaController;
 
 /*
@@ -83,12 +84,31 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
         Route::post('/purchase-coin', [CoinController::class, 'purchase'])->name('purchase.coin');
         Route::get('/coin-history', [CoinController::class, 'history'])->name('coin.history');
         Route::post('/cancel-transaction/{id}', [CoinController::class, 'cancelTransaction'])->name('transaction.cancel');
-        Route::get('/process-payment/{id}/process', [CoinController::class, 'processPayment'])->name('payment.process');
+        // Route::get('/process-payment/{id}/process', [CoinController::class, 'processPayment'])->name('payment.process');
+       
+       
+        Route::get('/payment', [CoinController::class, 'showTransactions'])->name('payment.transactions');
+
+        // Proses pembayaran untuk transaksi tertentu
+        Route::get('/process-payment/{id}', [CoinController::class, 'processPayment'])->name('payment.process');
+        
+        // Halaman sukses setelah pembayaran
+        Route::get('/payment-success', [CoinController::class, 'paymentSuccess'])->name('payment.success');
+        
+        // Halaman gagal setelah pembayaran
+        Route::get('/payment-failure', [CoinController::class, 'paymentFailure'])->name('payment.failure');
+       
+       
+       
+       
+       
+       
+       
         Route::get('/process-payment/{id}/process/bank', [CoinController::class, 'bank'])->name('bank.transfer');
         Route::post('/process-payment/{id}/process/bank/upload', [CoinController::class, 'upload'])->name('bank.upload');
 
         Route::get('/beli/{paket}', [CoinController::class, 'beliPaket'])->name('beli.paket');
-
+        Route::get('/perpanjang/{paket}/{port}/{unique_id}/yes', [CoinController::class, 'perpanjangPaket'])->name('perpanjang.paket');
 
 
     });
@@ -166,3 +186,4 @@ Route::get('/mikrotik/current-time/{ipmikrotik}', [MKController::class, 'getCurr
 Route::get('/mikrotik/interfaces', [MKController::class, 'dashboardmikrotik']);
 Route::get('/mikrotik/traffic', [MKController::class, 'getTraffic']);
 Route::get('/mikrotik/uptime/{ipmikrotik}', [MKController::class, 'getUptime']);
+

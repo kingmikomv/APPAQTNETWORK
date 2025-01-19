@@ -20,6 +20,7 @@ return new class extends Migration
             $table->longText('unique_id');
             $table->string('paket');
             $table->string('port')->nullable();
+            $table->timestamp('expire')->nullable();
             $table->timestamps();
         });
     }
