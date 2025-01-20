@@ -14,7 +14,8 @@ class CoinTransaction extends Model
         'coin_amount',
         'price',
         'status',
-        'external_id'
+        'external_id',
+        'paid_at',
     ];
 
     /**

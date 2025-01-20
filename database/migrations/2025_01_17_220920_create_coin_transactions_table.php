@@ -21,7 +21,7 @@ class CreateCoinTransactionsTable extends Migration
             $table->string('status')->default('pending'); // Status transaksi (pending/complete/failed)
             $table->longText('invoice_url')->nullable(); // Catatan transaksi
             $table->string('external_id')->unique()->nullable(); // UUID untuk transaksi
-
+            $table->string('paid_at')->nullable();
             $table->timestamps();
             
             // Foreign key constraint (Opsional)

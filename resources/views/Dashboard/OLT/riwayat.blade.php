@@ -36,7 +36,7 @@
                                                         <td>{{ $transaction->coin_amount }} Coin</td>
                                                         <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
                                                         <td>
-                                                            @if ($transaction->status == 'pending')
+                                                            @if ($transaction->status == 'pending' || $transaction->status == 'PENDING')
                                                                 <span class="badge bg-warning">Pending / Checking</span>
                                                             @elseif ($transaction->status === 'complete')
                                                                 <span class="badge bg-success">Selesai</span>

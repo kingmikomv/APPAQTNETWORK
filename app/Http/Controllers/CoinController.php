@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Xendit\Invoice\InvoiceApi;
 use Xendit\XenditSdkException;
 use App\Models\CoinTransaction;
+use Illuminate\Support\Facades\Log;
 use Xendit\Invoice\CreateInvoiceRequest;
 use Xendit\PaymentMethod\PaymentMethodApi;
 
@@ -141,6 +142,113 @@ class CoinController extends Controller
 
 
 
+    // public function processPayment($id)
+    // {
+    //     // Temukan data transaksi berdasarkan ID
+    //     $data = CoinTransaction::findOrFail($id);
+
+    //     // Generate UUID untuk transaksi
+    //     $uuid = (string) Str::uuid();
+
+    //     // Temukan user berdasarkan user_id dari data transaksi
+    //     $user = User::find($data->user_id);
+
+    //     // Pastikan data user ditemukan
+    //     if (!$user) {
+    //         return redirect()->back()->withErrors('User not found.');
+    //     }
+
+    //     // Ambil data user
+    //     $nama = $user->name;
+    //     $email = $user->email;
+
+    //     // Set API Key Xendit
+    //     Configuration::setXenditKey("xnd_development_89F4BMkA1W7GcAeU6vu5l07Dh7Y5Y15bXhxJICLGlk0SfeKPhdaGR78ejP0SAhF");
+    //     $apiInstance = new InvoiceApi();
+
+    //     $create_invoice_request = new CreateInvoiceRequest([
+    //         'external_id' => $uuid,
+    //         'description' => 'Nama : ' . $nama . ' Membeli Coin Dengan Harga ' . $data->price,
+    //         'amount' => $data->price,
+    //         'currency' => 'IDR',
+    //         'customer' => [
+    //             'given_names' => $nama,
+    //             'payer_email' => $email,
+    //         ],
+
+    //     ]);
+
+    //     try {
+    //         $invoice = $apiInstance->createInvoice($create_invoice_request);
+    //         //dd($uuid, $invoice);
+    //         $data->update([
+    //             'status' => $invoice['status'],
+    //             'external_id' => $uuid,
+    //             'invoice_url' => $invoice['invoice_url']
+    //         ]);
+
+
+    //         // Redirect ke URL pembayaran Xendit
+    //         return redirect($invoice['invoice_url']); // Gunakan URL pembayaran yang benar
+    //     } catch (\Xendit\XenditSdkException $e) {
+    //         // Log error untuk debugging
+    //         \Log::error('Error creating invoice: ' . $e->getMessage());
+
+    //         // Tampilkan pesan kesalahan
+    //         return redirect()->back()->withErrors('Failed to create invoice. Please try again.');
+    //     }
+    // }
+
+
+    // public function paymentSuccess(Request $req)
+    // {
+    //     // Set API Key Xendit
+    //     Configuration::setXenditKey("xnd_development_89F4BMkA1W7GcAeU6vu5l07Dh7Y5Y15bXhxJICLGlk0SfeKPhdaGR78ejP0SAhF");
+    //     $apiInstance = new InvoiceApi();
+
+    //     try {
+    //         // Dapatkan invoice berdasarkan external_id
+    //         $result = $apiInstance->getInvoices(null, $req->external_id);
+    //         //dd($result);
+    //         // Periksa status pembayaran
+    //         $status = $result[0]['status'];
+    //         //dd($status);
+    //         // Temukan transaksi berdasarkan external_id
+    //         $transaction = CoinTransaction::where('external_id', $req->external_id)->first();
+
+    //         if ($transaction) {
+    //             if ($status == 'SETTLED') {
+    //                 // Jika pembayaran berhasil, perbarui status transaksi menjadi 'completed'
+    //                 $transaction->update(['status' => 'complete']);
+
+    //                 // Ambil user terkait transaksi
+    //                 $user = User::find($transaction->user_id);
+
+    //                 if ($user) {
+    //                     // Tambahkan jumlah coin berdasarkan transaksi ke total_coin user
+    //                     $user->update([
+    //                         'total_coin' => $user->total_coin + $transaction->coin_amount,
+    //                     ]);
+    //                 }
+
+    //                 // Tampilkan notifikasi sukses
+    //                 return redirect()->route('coin.history')->with('success', 'Transaksi telah selesai dan berhasil.');
+    //             } else {
+    //                 // Jika status pembayaran tidak 'SETTLED', tampilkan pesan gagal
+    //                 return redirect()->route('coin.history')->with('error', 'Transaksi tidak berhasil.');
+    //             }
+    //         } else {
+    //             // Jika transaksi tidak ditemukan
+    //             return redirect()->route('coin.history')->withErrors('Transaksi tidak ditemukan.');
+    //         }
+    //     } catch (\Xendit\XenditSdkException $e) {
+    //         // Log error jika ada masalah dengan API Xendit
+    //         \Log::error('Error fetching invoice: ' . $e->getMessage());
+
+    //         return redirect()->route('coin.history')->withErrors('Terjadi kesalahan saat memverifikasi pembayaran.');
+    //     }
+    // }
+
     public function processPayment($id)
     {
         // Temukan data transaksi berdasarkan ID
@@ -172,24 +280,21 @@ class CoinController extends Controller
             'currency' => 'IDR',
             'customer' => [
                 'given_names' => $nama,
-                'email' => $email,
+                'payer_email' => $email,
             ],
-            'success_redirect_url' => route('payment.success', ['external_id' => $uuid]), // URL sukses setelah pembayaran
-            'failure_redirect_url' => 'http://localhost:8000', // URL gagal setelah pembayaran
         ]);
 
         try {
             $invoice = $apiInstance->createInvoice($create_invoice_request);
-            // dd($uuid, $invoice);
+
             $data->update([
                 'status' => $invoice['status'],
                 'external_id' => $uuid,
                 'invoice_url' => $invoice['invoice_url']
             ]);
 
-
             // Redirect ke URL pembayaran Xendit
-            return redirect($invoice['invoice_url']); // Gunakan URL pembayaran yang benar
+            return redirect($invoice['invoice_url']);
         } catch (\Xendit\XenditSdkException $e) {
             // Log error untuk debugging
             \Log::error('Error creating invoice: ' . $e->getMessage());
@@ -199,55 +304,61 @@ class CoinController extends Controller
         }
     }
 
-
-    public function paymentSuccess(Request $req)
+    public function webhook(Request $request)
     {
-        // Set API Key Xendit
-        Configuration::setXenditKey("xnd_development_89F4BMkA1W7GcAeU6vu5l07Dh7Y5Y15bXhxJICLGlk0SfeKPhdaGR78ejP0SAhF");
-        $apiInstance = new InvoiceApi();
+        $data = $request->all();
+        $external_id = $data['external_id'];
+        $statusJson = strtolower($data['status']);
+        
 
-        try {
-            // Dapatkan invoice berdasarkan external_id
-            $result = $apiInstance->getInvoices(null, $req->external_id);
+        $order = CoinTransaction::where('external_id', $external_id)->first();
+        $coin = User::find($order->user_id);
+        $sisaCoin = User::find($order->user_id)->update([
+            'total_coin' =>  $coin->total_coin + $order->coin_amount,
+        ]);
 
-            // Periksa status pembayaran
-            $status = $result[0]['status'];
-            //dd($status);
-            // Temukan transaksi berdasarkan external_id
-            $transaction = CoinTransaction::where('external_id', $req->external_id)->first();
+        $order->status = 'complete';
 
-            if ($transaction) {
-                if ($status == 'SETTLED') {
-                    // Jika pembayaran berhasil, perbarui status transaksi menjadi 'completed'
-                    $transaction->update(['status' => 'complete']);
+        $order->paid_at = $statusJson;
+        $order->update();
+ 
+       
 
-                    // Ambil user terkait transaksi
-                    $user = User::find($transaction->user_id);
-
-                    if ($user) {
-                        // Tambahkan jumlah coin berdasarkan transaksi ke total_coin user
-                        $user->update([
-                            'total_coin' => $user->total_coin + $transaction->coin_amount,
-                        ]);
-                    }
-
-                    // Tampilkan notifikasi sukses
-                    return redirect()->route('coin.history')->with('success', 'Transaksi telah selesai dan berhasil.');
-                } else {
-                    // Jika status pembayaran tidak 'SETTLED', tampilkan pesan gagal
-                    return redirect()->route('coin.history')->with('error', 'Transaksi tidak berhasil.');
-                }
-            } else {
-                // Jika transaksi tidak ditemukan
-                return redirect()->route('coin.history')->withErrors('Transaksi tidak ditemukan.');
-            }
-        } catch (\Xendit\XenditSdkException $e) {
-            // Log error jika ada masalah dengan API Xendit
-            \Log::error('Error fetching invoice: ' . $e->getMessage());
-
-            return redirect()->route('coin.history')->withErrors('Terjadi kesalahan saat memverifikasi pembayaran.');
-        }
+        //Log::info("Transaction {$externalId} updated to status {$status}.");
+        return response()->json(['message' => 'Webhook handled successfully.'], 200);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

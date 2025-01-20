@@ -35,6 +35,7 @@ Route::group(['prefix' => '/informasi'], function() {
        
     });
 });
+Route::post('/xendit/webhook', [CoinController::class, 'webhook'])->name('xendit.webhook');
 
 Auth::routes(['verify' => true, 'reset' => true]);
 
@@ -91,15 +92,6 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
 
         // Proses pembayaran untuk transaksi tertentu
         Route::get('/process-payment/{id}', [CoinController::class, 'processPayment'])->name('payment.process');
-        
-        // Halaman sukses setelah pembayaran
-        Route::get('/payment-success', [CoinController::class, 'paymentSuccess'])->name('payment.success');
-        
-        // Halaman gagal setelah pembayaran
-        Route::get('/payment-failure', [CoinController::class, 'paymentFailure'])->name('payment.failure');
-       
-       
-       
        
        
        
