@@ -93,11 +93,9 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
         // Proses pembayaran untuk transaksi tertentu
         Route::get('/process-payment/{id}', [CoinController::class, 'processPayment'])->name('payment.process');
        
+        Route::get('/invoice/{external_id}', [CoinController::class, 'generatePDF'])->name('invoice.pdf');
+
        
-       
-       
-        Route::get('/process-payment/{id}/process/bank', [CoinController::class, 'bank'])->name('bank.transfer');
-        Route::post('/process-payment/{id}/process/bank/upload', [CoinController::class, 'upload'])->name('bank.upload');
 
         Route::get('/beli/{paket}', [CoinController::class, 'beliPaket'])->name('beli.paket');
         Route::get('/perpanjang/{paket}/{port}/{unique_id}/yes', [CoinController::class, 'perpanjangPaket'])->name('perpanjang.paket');

@@ -22,6 +22,11 @@ class CreateCoinTransactionsTable extends Migration
             $table->longText('invoice_url')->nullable(); // Catatan transaksi
             $table->string('external_id')->unique()->nullable(); // UUID untuk transaksi
             $table->string('paid_at')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->string('payment_channel')->nullable(); 
+            $table->string('payment_channel')->nullable(); 
+            $table->string('ewallet_type')->nullable();
+            $table->string('payment_source')->nullable();
             $table->timestamps();
             
             // Foreign key constraint (Opsional)

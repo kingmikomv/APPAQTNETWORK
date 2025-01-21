@@ -115,6 +115,7 @@
     background: linear-gradient(to right, #2575fc, #6a11cb); /* Membalikkan warna gradien saat hover */
   }
 
+
   
 </style>
 
@@ -122,5 +123,5 @@
 
 </head>
 
-<body>
+<body class="sidebar-mini">
  

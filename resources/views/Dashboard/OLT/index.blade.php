@@ -8,7 +8,7 @@
         <div class="main-content">
             <section class="section">
                 <!-- MAIN OF CENTER CONTENT -->
-                <div class="row no-gutters"> <!-- Remove gutter space between columns -->
+                <div class="row"> <!-- Remove gutter space between columns -->
                     <!-- Welcome Card -->
                     {{-- <div class="col-lg-12">
                         <div class="card">
@@ -25,7 +25,7 @@
                             </div>
                         </div>
                     </div> --}}
-                    <div class="col-lg-12">
+                    <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
                                 <h4 style="font-size: 20px;"><i class="fas fa-coins"></i> Beli Coin</h4>
@@ -35,62 +35,67 @@
                                 <div class="alert alert-primary d-flex align-items-center" role="alert"
                                     style="font-size: 1rem;">
                                     <i class="fas fa-coins"
-                                        style="color: #ffc107; font-size: 1.5rem; margin-right: 10px;"></i>
+                                        style="color: #ffc107;"></i>
                                     <div>
-                                        <strong>Jumlah Coin Anda Saat Ini:</strong>
-                                        <span style="font-weight: bold; font-size: 1.2rem;">
-                                            {{ auth()->user()->total_coin }} Coin</span>
+                                        <strong> Jumlah Coin Anda Saat Ini : </strong>
+                                        <span class="margin-left: 10px">
+                                             {{ auth()->user()->total_coin }} Coin
+                                        </span>
                                     </div>
                                 </div>
 
-                                <a class="btn btn-primary btn-block" data-toggle="collapse" href="#coins"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
-                                    <i class="fas fa-coins"></i> Beli Coin
-                                </a>
-                                <div class="collapse" id="coins">
-                                    <div class="card card-body">
-                                        <form id="purchaseCoinsForm" method="POST"
-                                            action="{{ route('purchase.coin') }}">
-                                            @csrf
-                                            <div class="form-group">
-                                                <label for="Coins" style="font-weight: bold;">Pilih Jumlah
-                                                    Coin</label>
-                                                <select name="coin_amount" id="Coins" class="form-control">
-                                                    <option value="5">5 Coin - Rp10,500</option>
-                                                    <option value="10">10 Coin - Rp21,000</option>
-                                                    <option value="20">20 Coin - Rp39,500</option>
-                                                    <option value="50">50 Coin - Rp97,000</option>
-                                                    <option value="100">100 Coin - Rp152,500</option>
-                                                    <option value="200">200 Coin - Rp295,000</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <button type="submit" class="btn btn-primary btn-block">
-                                                            <i class="fas fa-shopping-cart"></i> Beli Coin
-                                                        </button>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <a class="btn btn-primary btn-block"
-                                                            href="{{ route('coin.history') }}">
-                                                            <i class="fas fa-history"></i> Riwayat Pembelian Coin
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </form>
-
-                                    </div>
+                                <form id="purchaseCoinsForm" method="POST"
+                                action="{{ route('purchase.coin') }}">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="Coins" style="font-weight: bold;">Pilih Jumlah
+                                        Coin</label>
+                                    <select name="coin_amount" id="Coins" class="form-control">
+                                        <option value="5">5 Coin - Rp10,500</option>
+                                        <option value="10">10 Coin - Rp21,000</option>
+                                        <option value="20">20 Coin - Rp39,500</option>
+                                        <option value="50">50 Coin - Rp97,000</option>
+                                        <option value="100">100 Coin - Rp152,500</option>
+                                        <option value="200">200 Coin - Rp295,000</option>
+                                    </select>
                                 </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6 mt-2">
+                                            <button type="submit" class="btn btn-primary btn-block">
+                                                <i class="fas fa-shopping-cart"></i> Masukan Keranjang
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 mt-2">
+                                            <a class="btn btn-primary btn-block"
+                                                href="{{ route('coin.history') }}">
+                                                <i class="fas fa-history"></i> Riwayat Keranjang
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
 
                                 <!-- Purchase Coins Form -->
 
 
 
 
-                                <a class="btn btn-warning btn-block mt-3" data-toggle="collapse" href="#collapseExample"
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 style="font-size: 20px;"><i class="fas fa-network-wired"></i> Beli Port</h4>
+                            </div>
+                            <div class="card-body">
+                                <!-- Display User's Current Coins -->
+
+                                {{-- <a class="btn btn-warning btn-block mt-3" data-toggle="collapse" href="#collapseExample"
                                     role="button" aria-expanded="false" aria-controls="collapseExample">
                                     <i class="fas fa-network-wired"></i> Beli Port OLT
                                 </a>
@@ -149,14 +154,48 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
+                                </div> --}}
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Paket</th>
+                                            <th>Coin</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>30 Hari</td>
+                                            <td>20 Coin</td>
+                                            <td>
+                                                <a href="{{ route('beli.paket', ['paket' => 'bulan']) }}"
+                                                    class="btn btn-primary">Beli Sekarang</a>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>1 Tahun</td>
+                                            <td>60 Coin</td>
+                                            <td>
+                                                <a href="{{ route('beli.paket', ['paket' => 'tahun']) }}"
+                                                    class="btn btn-primary">Beli Sekarang</a>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Unlimited</td>
+                                            <td>250 Coin</td>
+                                            <td>
+                                                <a href="{{ route('beli.paket', ['paket' => 'permanen']) }}"
+                                                    class="btn btn-primary">Beli Sekarang</a>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-
                     <!-- Form to Add VPN -->
-                    <div class="col-lg-12">
+                    <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
                                 <h4>Tambah OLT</h4>

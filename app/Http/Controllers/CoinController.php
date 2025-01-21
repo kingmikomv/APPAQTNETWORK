@@ -10,6 +10,7 @@ use App\Models\User;
 use RouterOS\Client;
 use App\Models\Paket;
 use App\Models\Invoice;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Xendit\Configuration;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -51,16 +52,27 @@ class CoinController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Transaksi coin berhasil dibuat.');
+        return redirect()->route('coin.history')->with('success', 'Transaksi coin berhasil dibuat.');
     }
     public function history()
     {
-        $transactions = CoinTransaction::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
-        // In your controller method
-        $totalPrice = $transactions->where('status', 'pending')->where('payment_proof', null)->sum('price'); // Sum all transaction prices
-
-        return view('Dashboard/OLT/riwayat', compact('transactions', 'totalPrice'));
+        $userId = auth()->id();
+    
+        $transactions = CoinTransaction::where('user_id', $userId)
+            ->where('status', 'complete')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $transactionsPending = CoinTransaction::where('user_id', $userId)
+            ->whereIn('status', ['pending', 'PENDING'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    
+        $totalPrice = $transactionsPending->where('payment_proof', null)->sum('price'); // Hanya untuk pending transaksi tanpa payment proof
+    
+        return view('Dashboard/OLT/riwayat', compact('transactions', 'transactionsPending', 'totalPrice'));
     }
+    
     public function cancelTransaction($id)
     {
         $transaction = CoinTransaction::findOrFail($id);
@@ -287,18 +299,19 @@ class CoinController extends Controller
         try {
             $invoice = $apiInstance->createInvoice($create_invoice_request);
 
-            $data->update([
-                'status' => $invoice['status'],
-                'external_id' => $uuid,
-                'invoice_url' => $invoice['invoice_url']
-            ]);
+            if (isset($invoice['invoice_url'])) {
+                $data->update([
+                    'status' => $invoice['status'],
+                    'external_id' => $uuid,
+                    'invoice_url' => $invoice['invoice_url']
+                ]);
+            }
+            return redirect($invoice['invoice_url']);
 
             // Redirect ke URL pembayaran Xendit
-            return redirect($invoice['invoice_url']);
         } catch (\Xendit\XenditSdkException $e) {
             // Log error untuk debugging
-            \Log::error('Error creating invoice: ' . $e->getMessage());
-
+          
             // Tampilkan pesan kesalahan
             return redirect()->back()->withErrors('Failed to create invoice. Please try again.');
         }
@@ -309,24 +322,73 @@ class CoinController extends Controller
         $data = $request->all();
         $external_id = $data['external_id'];
         $statusJson = strtolower($data['status']);
-        
+        $paid_at = $data['paid_at'];
+        $payment_method = $data['payment_method'];
+        $payment_channel = $data['payment_channel'];
 
+        // Menemukan order berdasarkan external_id
         $order = CoinTransaction::where('external_id', $external_id)->first();
+
+        if (!$order) {
+            return response()->json(['message' => 'Order not found.'], 404);
+        }
+
+        // Update jumlah coin untuk pengguna
         $coin = User::find($order->user_id);
         $sisaCoin = User::find($order->user_id)->update([
-            'total_coin' =>  $coin->total_coin + $order->coin_amount,
+            'total_coin' => $coin->total_coin + $order->coin_amount,
         ]);
 
+        // Memperbarui status order
         $order->status = 'complete';
+        $order->paid_at = $paid_at;
 
-        $order->paid_at = $statusJson;
+        // Menyimpan invoice_url berdasarkan status pembayaran
+        //$order->invoice_url = $statusJson;
+
+        // Menangani jenis metode pembayaran
+        switch ($payment_method) {
+            case 'BANK_TRANSFER':
+                // Handle payment method BANK_TRANSFER
+                $order->payment_method = 'BANK_TRANSFER';
+                $order->payment_channel = $payment_channel; // Misalnya BRI, Mandiri, dll.
+                break;
+
+            case 'EWALLET':
+                // Handle payment method EWALLET
+                $order->payment_method = 'EWALLET';
+                $order->payment_channel = $payment_channel; // Misalnya DANA, OVO, dll.
+                if (isset($data['ewallet_type'])) {
+                    $order->ewallet_type = $data['ewallet_type']; // Menyimpan jenis e-wallet (DANA, OVO, dll)
+                }
+                break;
+            case 'RETAIL_OUTLET':
+                // Handle payment method EWALLET
+                $order->payment_method = 'RETAIL_OUTLET';
+                $order->payment_channel = $payment_channel; // Misalnya DANA, OVO, dll.
+                
+                break;
+
+            case 'QR_CODE':
+                // Handle payment method QR_CODE
+                $order->payment_method = 'QR_CODE';
+                $order->payment_channel = $payment_channel; // Misalnya QRIS, LinkAja, dll.
+                if (isset($data['payment_details']['source'])) {
+                    $order->payment_source = $data['payment_details']['source']; // Menyimpan sumber pembayaran QR
+                }
+                break;
+
+            default:
+                // Handle other payment methods or errors
+                return response()->json(['message' => 'Unknown payment method.'], 400);
+        }
+
+        // Update order data
         $order->update();
- 
-       
 
-        //Log::info("Transaction {$externalId} updated to status {$status}.");
         return response()->json(['message' => 'Webhook handled successfully.'], 200);
     }
+
 
 
 
@@ -577,4 +639,28 @@ class CoinController extends Controller
 
         return redirect()->back()->with('success', 'Paket berhasil diperpanjang dan saldo coin terupdate. NAT rule diaktifkan kembali.');
     }
+    public function generatePDF($external_id)
+{
+    // Ambil data transaksi berdasarkan external_id
+    $transaction = CoinTransaction::where('external_id', $external_id)->first();
+    $user = User::find($transaction->user_id);
+    // Jika transaksi tidak ditemukan, tampilkan halaman 404
+    if (!$transaction) {
+        abort(404, 'Transaksi tidak ditemukan.');
+    }
+
+    // Data yang akan ditampilkan di view PDF
+    $data = [
+        'transaction' => $transaction,
+        'user' => $user->name,
+        'email' => $user->email,
+    ];
+
+    // Load view dengan data
+    $pdf = Pdf::loadView('Dashboard.OLT.pdf', $data)->setPaper('f4', 'portrait');
+
+    // Unduh atau tampilkan PDF
+    return $pdf->download('Invoice_Transaksi_' . $transaction->external_id . '.pdf');
+}
+
 }

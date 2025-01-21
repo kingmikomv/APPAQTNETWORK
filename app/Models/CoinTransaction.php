@@ -15,6 +15,11 @@ class CoinTransaction extends Model
         'price',
         'status',
         'external_id',
+        'invoice_url',
+        'payment_method',
+        'payment_channel',
+        'ewallet_type',
+        'payment_source',
         'paid_at',
     ];
 

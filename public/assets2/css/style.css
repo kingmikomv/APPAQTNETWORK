@@ -2706,6 +2706,74 @@ body.layout-3 .main-footer {
   margin-top: 40px;
   margin-bottom: 40px; }
 
+
+
+.main-sidebar {
+    background-color: #2f3640;
+    color: #f5f6fa;
+}
+
+.main-sidebar .menu-header {
+    color: #7f8fa6;
+    font-size: 14px;
+    margin: 20px 0 10px;
+    text-transform: uppercase;
+}
+
+.main-sidebar a {
+    color: #dcdde1;
+    text-decoration: none;
+}
+
+.main-sidebar a:hover {
+    color: #f5f6fa;
+    background-color: #353b48;
+    border-radius: 5px;
+}
+
+.main-sidebar .active > a {
+    background-color: #374653;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.main-sidebar .dropdown-menu {
+    background-color: #3b4252;
+}
+
+.main-sidebar .dropdown-menu a {
+    padding-left: 30px;
+}
+
+.main-sidebar .sidebar-brand a {
+    font-weight: bold;
+    color: #00a8ff;
+}
+
+.main-sidebar .sidebar-brand-sm a {
+    color: #00a8ff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 body:not(.sidebar-mini) .sidebar-style-1 .sidebar-menu li.active a {
   background-color: #6777ef;
   color: #fff; }

@@ -1,0 +1,28 @@
+/*
+Theme Name: Invoice V4
+Theme URI: https://templatesjungle.com/
+Author: TemplatesJungle
+Author URI: https://templatesjungle.com/
+Description: Invoice V4 is specially designed product packaged for Invoice.
+Version: 4.0
+*/
+
+/*--------------------------------------------------------------
+Styles
+--------------------------------------------------------------*/
+
+/* Fonts */
+:root {
+  --body-font: 'Montserrat', sans-serif;
+}
+
+/* Bootstrap Override */
+body {
+  --bs-font-sans-serif: 'Montserrat', sans-serif;
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 2;
+  --bs-body-color: #303030;
+  --bs-border-color: #eeeeee;
+}

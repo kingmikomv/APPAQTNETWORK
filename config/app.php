@@ -186,6 +186,8 @@ return [
          * Package Service Providers...
          */
         Arikun\Stislasimple\StislaServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -211,6 +213,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+
     ])->toArray(),
 
 ];
