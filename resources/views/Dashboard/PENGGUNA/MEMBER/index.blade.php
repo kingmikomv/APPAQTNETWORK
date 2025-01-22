@@ -59,64 +59,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-12"> <!-- Full width column -->
-                        <div class="card">
-                            <div class="card-body text-center table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Nama Pengguna</th>
-                                            <th>Waktu Checkout</th>
-                                            <th>Total Harga</th>
-                                            <th>Total Coin</th>
-                                            <th>Status Bukti Pembayaran</th>
-                                            <th>Lihat Bukti Pembayaran</th>
-                                            <th>Option</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php $no = 1; @endphp
-                                        @foreach ($summary as $p)
-                                        <tr>
-                                            <td>{{$no++}}</td>
-                                            <td>{{$p->user->name}}</td>
-                                            <td>{{$p->created_at}}</td>
-                                            <td>Rp{{number_format($p->price, 0, ',', '.')}}</td>
-                                            <td>{{$p->coin_amount}}</td>
-                                            <td>
-                                                @if(!empty($p->payment_proof))
-                                                    <span class="badge badge-success">Sudah Dibayar</span>
-                                                @else
-                                                    <span class="badge badge-danger">Belum Dibayar</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if(!empty($p->payment_proof))
-                                                <a class="btn btn-primary" href="{{ asset('pembayaran/' . $p->payment_proof) }}" target="_blank" rel="noopener noreferrer">
-                                                    <i class="fas fa-eye"></i> Lihat Bukti Pembayaran
-                                                </a>
-                                            @else
-                                                <span class="text-muted">Tidak ada bukti pembayaran</span>
-                                            @endif
-                                            
-                                            </td>
-                                            <td>
-                                                @if($p->status == 'pending' || !empty($p->payment_proof))
-                                                <a href="{{route('acc', $p->id)}}" class="btn btn-primary">ACC</a>
-                                                @elseif($p->status == 'completed')
-                                                <a href="" class="btn btn-success" disabled>Sukses</a>
-                                                @elseif($p->status == 'failed')
-                                                <a href="" class="btn btn-danger"></a>
-                                                @endif
-
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     
                 </div>

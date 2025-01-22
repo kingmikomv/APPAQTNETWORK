@@ -184,7 +184,7 @@
                                         <tr>
                                             <td>3</td>
                                             <td>Unlimited</td>
-                                            <td>250 Coin</td>
+                                            <td>200 Coin</td>
                                             <td>
                                                 <a href="{{ route('beli.paket', ['paket' => 'permanen']) }}"
                                                     class="btn btn-primary">Beli Sekarang</a>
@@ -342,12 +342,9 @@
                                     name="portolt">
                             </div>
                             <div class="form-group">
-                                <label for="password">IP Address VPN</label>
-                                <div class="form-group">
                                     <label for="password">IP Address VPN</label>
                                     <input type="text" class="form-control" placeholder="IP Address VPN"
                                         name="ipvpn">
-                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="password">Port VPN</label>

@@ -13,19 +13,19 @@
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-server"></i> <span>Server</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ request()->routeIs('datavpn') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('datavpn') }}">Data VPN</a>
+                        <a class="nav-link" href="{{ route('datavpn') }}"><i class="fas fa-tty"></i> Data VPN</a>
                     </li>
                     @if(session('mikrotik_connected'))
                     <li class="{{ request()->routeIs('dashboardmikrotik') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('dashboardmikrotik', ['ipmikrotik' => session('ipmikrotik')]) }}">Dashboard Mikrotik</a>
+                        <a class="nav-link" href="{{ route('dashboardmikrotik', ['ipmikrotik' => session('ipmikrotik')]) }}"><i class="fas fa-dice-d6"></i> Dashboard</a>
                     </li>
                     @else
                     <li class="{{ request()->routeIs('datamikrotik') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('datamikrotik') }}">Data Mikrotik</a>
+                        <a class="nav-link" href="{{ route('datamikrotik') }}"><i class="fas fa-sitemap"></i> Data Mikrotik</a>
                     </li>
                     @endif
                     <li class="{{ request()->routeIs('dataolt') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('dataolt') }}">Data OLT</a>
+                        <a class="nav-link" href="{{ route('dataolt') }}"><i class="fas fa-project-diagram"></i> Data OLT</a>
                     </li>
                 </ul>
             </li>
@@ -92,7 +92,22 @@
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-users"></i> <span>User</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ request()->routeIs('member') ? 'active' : '' }}">
-                        <a href="{{ route('member') }}">Data Pengguna</a>
+                        <a href="{{ route('member') }}"><i class="fas fa-users"></i> Data Pengguna</a>
+                    </li>
+                    <li class="{{ request()->routeIs('undianadmin') ? 'active' : '' }}">
+                        <a href="{{ route('undianadmin') }}"><i class="fas fa-gift"></i>Undian</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="dropdown {{ request()->routeIs('member', 'undianadmin') ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-money-bill-wave"></i> <span>Transaksi</span></a>
+                <ul class="dropdown-menu">
+                    <li class="{{ request()->routeIs('member') ? 'active' : '' }}">
+                        <a href="{{ route('member') }}"><i class="fas fa-coins"></i> Transaksi Coin</a>
+                    </li>
+                    <li class="{{ request()->routeIs('undianadmin') ? 'active' : '' }}">
+                        <a href="{{ route('undianadmin') }}"><i class="fas fa-network-wired"></i> Transaksi Port</a>
                     </li>
                 </ul>
             </li>

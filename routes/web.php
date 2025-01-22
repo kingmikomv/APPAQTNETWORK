@@ -155,6 +155,8 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
     });
 });
 
+
+
 Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null, $pembelianId = null) {
     Route::controller(PenggunaController::class)->group(function ($id = null,  $pembelianId = null) {
         Route::get('/', 'index')->name('member');

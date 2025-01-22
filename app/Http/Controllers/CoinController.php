@@ -533,11 +533,11 @@ class CoinController extends Controller
 
             return redirect()->back()->with('success', 'Paket berhasil dibeli.');
         } elseif ($paket == 'permanen') {
-            if ($coin < 250) {
+            if ($coin < 200) {
                 return redirect()->route('dataolt')->with('error', 'Coin tidak cukup.');
             }
 
-            $sisaCoin = $coin - 250;
+            $sisaCoin = $coin - 200;
 
             do {
                 $newPort = rand(6300, 65535);
