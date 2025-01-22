@@ -25,7 +25,6 @@
                                                     <th>Jumlah Coin</th>
                                                     <th>Harga</th>
                                                     <th>Status</th>
-                                                   
                                                     <th>Tanggal</th>
                                                     <th>Option</th>
                                                 </tr>
@@ -77,6 +76,7 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
+                                                <th>ID Invoice</th>
                                                 <th>Jumlah Coin</th>
                                                 <th>Harga</th>
                                                 <th>Status</th>
@@ -90,13 +90,15 @@
                                             @foreach ($transactions as $index => $transaction)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
+                                                    <td>
+                                                        {{ Str::limit($transaction->external_id, 9, '...') }}
+                                                    </td>
                                                     <td>{{ $transaction->coin_amount }} Coin</td>
                                                     <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
                                                     <td>
                                                         <span class="badge bg-success">Selesai</span>
                                                     </td>
                                                     <td>
-                                                        
                                                         @if($transaction->payment_method == 'BANK_TRANSFER')
                                                             Bank Transfer
                                                         @elseif($transaction->payment_method == 'QR_CODE')
@@ -115,12 +117,9 @@
                                                             Data tidak valid
                                                         @endif
                                                     </td>
-                                                    
-                                                    
-                                                    <td>
+                                                     <td>
                                                         <a href="{{ route('invoice.pdf', $transaction->external_id) }}" class="btn btn-primary">Invoice PDF</a>
                                                     </td>
-                                                    
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -142,9 +141,9 @@
     $(document).ready(function() {
         $('#pending').DataTable();
         $('#riwayat').DataTable();
-
     });
 </script>
+
 @if (session('success'))
     <script>
         Swal.fire({

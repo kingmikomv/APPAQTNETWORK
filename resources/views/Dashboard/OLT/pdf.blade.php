@@ -1,216 +1,226 @@
 <!doctype html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<title>Faktur - AQT Network</title>
+    <meta charset="UTF-8">
+    <title>Faktur - AQT Network</title>
 
-<style type="text/css">
-    * {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        background-color: #f4f6f9;
-        color: #333;
-        line-height: 1.6;
-        padding: 40px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-
-    h3 {
-        color: #2c3e50;
-        font-size: 30px;
-    }
-
-    /* Header Styling */
-    .header-table {
-        background-color: #2980b9;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-bottom: 40px;
-        color: white;
-    }
-
-    .header-table td {
-        padding: 10px;
-    }
-
-    .header-table img {
-        width: 150px;
-    }
-
-    .header-table h3 {
-        font-size: 32px;
-        margin-bottom: 10px;
-    }
-
-    .header-table .address {
-        font-size: 14px;
-        color: #000000;
-        margin-top: 10px;
-    }
-
-    /* Invoice Information */
-    .info-table {
-        margin-top: 20px;
-        font-size: 16px;
-    }
-
-    .info-table td {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    .info-table strong {
-        color: #2980b9;
-    }
-
-    /* Table Styling */
-    th, td {
-        padding: 15px;
-        border: 1px solid #ddd;
-        text-align: center;
-        font-size: 14px;
-        color: #34495e;
-    }
-
-    th {
-        background-color: #3498db;
-        color: white;
-        font-weight: normal;  /* Changed from bold to normal */
-    }
-
-    td {
-        background-color: #fff;
-        transition: background-color 0.3s ease;
-    }
-
-    td:hover {
-        background-color: #f9f9f9;
-    }
-
-    /* Footer Styling */
-    .footer-table {
-        margin-top: 30px;
-        background-color: #f1f1f1;
-        border-top: 2px solid #ddd;
-    }
-
-    .footer-table td {
-        padding: 15px;
-        text-align: right;
-        font-size: 16px;
-        color: #34495e;
-    }
-
-    .footer-table .gray {
-        background-color: #f4f4f4;
-        font-weight: bold;
-        color: #e74c3c;
-    }
-
-    .footer-table td span {
-        font-weight: bold;
-        color: #2980b9;
-    }
-
-    /* Hover effect for rows */
-    tbody tr:hover {
-        background-color: #ecf0f1;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .header-table {
-            text-align: center;
+    <style type="text/css">
+        * {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .header-table img {
+        body {
+            background-color: #f9fafc;
+            color: #333;
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
             margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px 30px;
         }
 
-        .footer-table td {
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 25px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #34495e;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+
+        h5 {
+            text-align: center;
+
+            color: #7f8c8d;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .header .logo img {
+            width: 150px;
+        }
+
+        .header .details {
+            text-align: right;
+        }
+
+        .header .details p {
+            margin: 2px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table thead th {
+            background-color: #3498db;
+            color: #fff;
+            font-weight: bold;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        table tbody td {
+            padding: 10px;
+            border: 1px solid #ddd;
             font-size: 14px;
         }
 
-        .info-table td {
-            font-size: 12px;
+        table tfoot td {
+            padding: 10px;
+            font-weight: bold;
+            border: 1px solid #ddd;
         }
-    }
 
-</style>
+        table tfoot tr.total-row {
+            background-color: #f4f4f4;
+            color: #e74c3c;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header .details {
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
+    </style>
 
 </head>
+
 <body>
+    <div class="container">
+        <h1>Invoice <br> {{ $transaction->external_id }} </h1>
 
-  <table class="header-table">
-    <tr>
-        <td valign="top"><img src="{{ url('/assets/ll.png')}}" alt="Logo AQT Network" /></td>
-        <td>
-            <h3>AQT Network</h3>
-            <div class="address">
-                Harga Rakyat Kualitas Pejabat<br>
-                Sindangkerta, 45252<br>
-                Indramayu, Jawa Barat<br>
-                Email: official@aqtnetwork.my.id
+        <div class="header">
+
+            <div class="details">
+                <h2>AQT Network</h2>
+                <p>Sindangkerta, 45252</p>
+                <p>Indramayu, Jawa Barat</p>
+                <p>official@aqtnetwork.my.id</p>
             </div>
-        </td>
-    </tr>
-  </table>
+        </div>
 
-  <table class="info-table">
-    <tr>
-        <td><strong>Dari:</strong> AQT Network</td>
-        <td><strong>Untuk:</strong> {{$user}}</td>
-    </tr>
-  </table>
+        <h2>Informasi Transaksi</h2>
+        <table>
+            <tr>
+                <td><strong>Untuk:</strong></td>
+                <td>{{ $user }}</td>
+            </tr>
+            <tr>
+                <td><strong>Transaksi Dibuat:</strong></td>
+                <td>{{ $transaction->created_at->format('d M Y, H:i') }}</td>
+            </tr>
+            <tr>
+                <td><strong>Transaksi Lunas:</strong></td>
+                <td> {{ \Carbon\Carbon::parse($transaction->paid_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Metode Pembayaran:</strong></td>
+                <td>
+                    @if ($transaction->payment_method == 'BANK_TRANSFER')
+                        Transfer Bank
+                    @elseif($transaction->payment_method == 'EWALLET')
+                        EWALLET
+                    @elseif($transaction->payment_method == 'QR_CODE')
+                        QRIS
+                    @elseif($transaction->payment_method == 'RETAIL_OUTLET')
+                        Retail Outlet
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Pembayaran By:</strong></td>
+                <td>
+                    {{ $transaction->payment_channel }}
+                </td>
+            </tr>
+        </table>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Jumlah Coin</th>
-        <th>Total (Rp)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{$transaction->coin_amount}} Coin</td>
-        <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
-      </tr>
-    </tbody>
+        <h2>Rincian Pembelian</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Jumlah Coin</th>
+                    <th>Total (Rp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ $transaction->coin_amount }} Coin</td>
+                    <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td align="right">Subtotal</td>
+                    <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td align="right">Diskon</td>
+                    <td>-</td>
+                </tr>
+                <tr class="total-row">
+                    <td align="right">Total</td>
+                    <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
+        </table>
 
-    <tfoot class="footer-table">
-        <tr>
-            <td colspan="1"><span>Subtotal</span></td>
-            <td>Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
-        </tr>
-        <tr>
-            <td colspan="1"><span>Diskon</span></td>
-            <td>-</td>
-        </tr>
-        <tr>
-            <td colspan="1" class="gray"><span>Total</span></td>
-            <td class="gray">Rp{{ number_format($transaction->price, 0, ',', '.') }}</td>
-        </tr>
-    </tfoot>
-  </table>
-
-  <div class="footer-table">
-    <table>
-        <tr>
-            <td colspan="2" style="text-align: center;">Invoice - AQT Network - {{$transaction->external_id}}</td>
-        </tr>
-    </table>
-  </div>
-
+        <div class="footer">
+            <p>Invoice ID: {{ $transaction->external_id }}</p>
+            <p>Terima kasih telah bertransaksi dengan AQT Network.</p>
+        </div>
+    </div>
 </body>
+
 </html>
