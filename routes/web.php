@@ -35,7 +35,8 @@ Route::group(['prefix' => '/informasi'], function() {
        
     });
 });
-Route::post('/xendit/webhook', [CoinController::class, 'webhook'])->name('xendit.webhook');
+Route::post('/xendit/webhook', [CoinController::class, 'webhook'])->middleware('xendit.verify');
+
 
 Auth::routes(['verify' => true, 'reset' => true]);
 
