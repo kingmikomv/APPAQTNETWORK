@@ -26,6 +26,7 @@ class CoinController extends Controller
 
     public function purchase(Request $request)
     {
+        // Validasi input
         $request->validate([
             'coin_amount' => 'required|integer',
         ]);
@@ -40,39 +41,80 @@ class CoinController extends Controller
             200 => 295000,
         ];
 
+        // Validasi apakah jumlah coin ada di daftar harga
         if (!isset($priceList[$coinAmount])) {
             return redirect()->back()->with('error', 'Jumlah coin tidak valid.');
         }
 
-        // Simpan transaksi
-        $transaction = CoinTransaction::create([
-            'user_id' => auth()->id(),
-            'coin_amount' => $coinAmount,
-            'price' => $priceList[$coinAmount],
-            'status' => 'pending',
-        ]);
+        try {
+            // Pesan WhatsApp
+            $message = sprintf(
+                "Halo %s,\n\nTerima kasih telah melakukan pembelian coin di platform kami. Berikut detail transaksi Anda:\n\n💰 *Jumlah Coin*: %d Coin\n💳 *Total Pembayaran*: Rp %s\n📅 *Tanggal Pembelian*: %s\n🔄 *Status Transaksi*: %s\n\nSilakan lakukan pembayaran untuk melanjutkan proses. Jika Anda memiliki pertanyaan, jangan ragu untuk menghubungi kami.\n\nSalam hangat,\nTim AQT Network",
+                auth()->user()->name ?? 'Pelanggan', // Nama pengguna jika tersedia
+                $coinAmount,
+                number_format($priceList[$coinAmount], 0, ',', '.'),
+                now()->format('d M Y H:i'), // Menampilkan tanggal dan waktu pembelian
+                'Pending' // Status transaksi, Anda bisa menyesuaikan jika sudah ada status lain
+            );
+            
+            
 
-        return redirect()->route('coin.history')->with('success', 'Transaksi coin berhasil dibuat.');
+            // Menggunakan Guzzle untuk menggantikan cURL
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post('https://api.fonnte.com/send', [
+                'headers' => [
+                    'Authorization' => 'g3ZXCoCHeR1y75j4xJoz', // Ganti dengan token Anda
+                ],
+                'form_params' => [
+                    'target' => '085155361211',
+                    'message' => $message,
+                    'countryCode' => '62', // Optional
+                ],
+            ]);
+
+            // Periksa respons dari API Fonnte
+            $responseBody = json_decode($response->getBody(), true);
+            //dd($responseBody);
+            // Tambahkan validasi respons (opsional)
+            if (!isset($responseBody['status']) || $responseBody['status'] != 'success') {
+                return redirect()->back()->with('error', 'Gagal mengirim notifikasi WhatsApp.');
+            }
+
+            // Simpan transaksi ke database
+            $transaction = CoinTransaction::create([
+                'user_id' => auth()->id(),
+                'coin_amount' => $coinAmount,
+                'price' => $priceList[$coinAmount],
+                'status' => 'pending',
+            ]);
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('coin.history')->with('success', 'Transaksi coin berhasil dibuat.');
+        } catch (\Exception $e) {
+            // Tangani error jika terjadi kesalahan
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
+
     public function history()
     {
         $userId = auth()->id();
-    
+
         $transactions = CoinTransaction::where('user_id', $userId)
             ->where('status', 'complete')
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $transactionsPending = CoinTransaction::where('user_id', $userId)
             ->whereIn('status', ['pending', 'PENDING'])
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         $totalPrice = $transactionsPending->where('payment_proof', null)->sum('price'); // Hanya untuk pending transaksi tanpa payment proof
-    
+
         return view('Dashboard/OLT/riwayat', compact('transactions', 'transactionsPending', 'totalPrice'));
     }
-    
+
     public function cancelTransaction($id)
     {
         $transaction = CoinTransaction::findOrFail($id);
@@ -308,14 +350,13 @@ class CoinController extends Controller
                     'external_id' => $uuid,
                     'invoice_url' => $invoice['invoice_url']
                 ]);
-                
             }
             return redirect($invoice['invoice_url']);
 
             // Redirect ke URL pembayaran Xendit
         } catch (\Xendit\XenditSdkException $e) {
             // Log error untuk debugging
-          
+
             // Tampilkan pesan kesalahan
             return redirect()->back()->withErrors('Failed to create invoice. Please try again.');
         }
@@ -349,13 +390,14 @@ class CoinController extends Controller
 
         // Menyimpan invoice_url berdasarkan status pembayaran
         //$order->invoice_url = $statusJson;
-
+        $nn = '';
         // Menangani jenis metode pembayaran
         switch ($payment_method) {
             case 'BANK_TRANSFER':
                 // Handle payment method BANK_TRANSFER
                 $order->payment_method = 'BANK_TRANSFER';
                 $order->payment_channel = $payment_channel; // Misalnya BRI, Mandiri, dll.
+                $nn = 'Bank Transfer';
                 break;
 
             case 'EWALLET':
@@ -365,12 +407,13 @@ class CoinController extends Controller
                 if (isset($data['ewallet_type'])) {
                     $order->ewallet_type = $data['ewallet_type']; // Menyimpan jenis e-wallet (DANA, OVO, dll)
                 }
+                $nn = 'E-Wallet';
                 break;
             case 'RETAIL_OUTLET':
                 // Handle payment method EWALLET
                 $order->payment_method = 'RETAIL_OUTLET';
                 $order->payment_channel = $payment_channel; // Misalnya DANA, OVO, dll.
-                
+                $nn = 'Retail Outlet';
                 break;
 
             case 'QR_CODE':
@@ -380,6 +423,7 @@ class CoinController extends Controller
                 if (isset($data['payment_details']['source'])) {
                     $order->payment_source = $data['payment_details']['source']; // Menyimpan sumber pembayaran QR
                 }
+                $nn = 'QR Code';
                 break;
 
             default:
@@ -389,6 +433,44 @@ class CoinController extends Controller
 
         // Update order data
         $order->update();
+
+        $message = sprintf(
+            "Halo %s,\n\nTerima kasih telah melakukan pembelian coin di platform kami. Berikut detail transaksi Anda:\n\n💰 *Jumlah Coin*: %d Coin\n💳 *Total Pembayaran*: Rp %s\n📅 *Tanggal Pembelian*: %s\n🔄 *Status Transaksi*: %s\n💵 *Pembayaran Dilakukan Menggunakan*: %s By %s sebesar Rp %s\n\nPembayaran Anda telah berhasil kami terima. Terima kasih telah melakukan transaksi dengan kami.\n\nJika Anda memiliki pertanyaan atau butuh bantuan lebih lanjut, jangan ragu untuk menghubungi kami.\n\nSalam hangat,\nTim AQT Network",
+            $coin->name ?? 'Pelanggan', // Nama pengguna jika tersedia
+            $order->coin_amount,
+            number_format($order->price, 0, ',', '.'), // Menggunakan harga dari transaksi
+            now()->format('d M Y H:i'), // Menampilkan tanggal dan waktu pembelian
+            'Sukses', // Status transaksi berubah menjadi sukses setelah pembayaran diterima
+            $nn, // Metode pembayaran
+            $payment_channel, // Nama bank atau metode pembayaran spesifik
+            number_format($order->price, 0, ',', '.') // Jumlah yang dibayar
+        );
+        
+        
+        
+        
+
+        // Menggunakan Guzzle untuk menggantikan cURL
+        $client = new \GuzzleHttp\Client();
+        $response = $client->post('https://api.fonnte.com/send', [
+            'headers' => [
+                'Authorization' => 'g3ZXCoCHeR1y75j4xJoz', // Ganti dengan token Anda
+            ],
+            'form_params' => [
+                'target' => '085155361211',
+                'message' => $message,
+                'countryCode' => '62', // Optional
+            ],
+        ]);
+
+        // Periksa respons dari API Fonnte
+        $responseBody = json_decode($response->getBody(), true);
+        //dd($responseBody);
+        // Tambahkan validasi respons (opsional)
+        if (!isset($responseBody['status']) || $responseBody['status'] != 'success') {
+            return redirect()->back()->with('error', 'Gagal mengirim notifikasi WhatsApp.');
+        }
+
 
         return response()->json(['message' => 'Webhook handled successfully.'], 200);
     }
@@ -644,27 +726,26 @@ class CoinController extends Controller
         return redirect()->back()->with('success', 'Paket berhasil diperpanjang dan saldo coin terupdate. NAT rule diaktifkan kembali.');
     }
     public function generatePDF($external_id)
-{
-    // Ambil data transaksi berdasarkan external_id
-    $transaction = CoinTransaction::where('external_id', $external_id)->first();
-    $user = User::find($transaction->user_id);
-    // Jika transaksi tidak ditemukan, tampilkan halaman 404
-    if (!$transaction) {
-        abort(404, 'Transaksi tidak ditemukan.');
+    {
+        // Ambil data transaksi berdasarkan external_id
+        $transaction = CoinTransaction::where('external_id', $external_id)->first();
+        $user = User::find($transaction->user_id);
+        // Jika transaksi tidak ditemukan, tampilkan halaman 404
+        if (!$transaction) {
+            abort(404, 'Transaksi tidak ditemukan.');
+        }
+
+        // Data yang akan ditampilkan di view PDF
+        $data = [
+            'transaction' => $transaction,
+            'user' => $user->name,
+            'email' => $user->email,
+        ];
+
+        // Load view dengan data
+        $pdf = Pdf::loadView('Dashboard.OLT.pdf', $data)->setPaper('f4', 'portrait');
+
+        // Unduh atau tampilkan PDF
+        return $pdf->download('Invoice_Transaksi_' . $transaction->external_id . '.pdf');
     }
-
-    // Data yang akan ditampilkan di view PDF
-    $data = [
-        'transaction' => $transaction,
-        'user' => $user->name,
-        'email' => $user->email,
-    ];
-
-    // Load view dengan data
-    $pdf = Pdf::loadView('Dashboard.OLT.pdf', $data)->setPaper('f4', 'portrait');
-
-    // Unduh atau tampilkan PDF
-    return $pdf->download('Invoice_Transaksi_' . $transaction->external_id . '.pdf');
-}
-
 }
