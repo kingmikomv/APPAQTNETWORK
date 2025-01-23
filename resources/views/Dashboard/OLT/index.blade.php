@@ -9,22 +9,7 @@
             <section class="section">
                 <!-- MAIN OF CENTER CONTENT -->
                 <div class="row"> <!-- Remove gutter space between columns -->
-                    <!-- Welcome Card -->
-                    {{-- <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 style="font-size: 20px;"><i class="fas fa-info-circle"></i> Pemberitahuan</h4>
-                            </div>
-                            <div class="card-body">
-                                <p style="font-size: 20px;">Pada halaman ini berfungsi sebagai halaman penambahan data
-                                    OLT EPON HA7304</p>
-                                <hr>
-                                <p class="mb-0" style="font-size: 20px;">Jika OLT anda tidak mempunyai IP Public
-                                    silahkan tambahkan disini, dan jika anda bingung silahkan kunjungi link youtube kami
-                                    untuk pemasangan VPN pada OLT anda</p>
-                            </div>
-                        </div>
-                    </div> --}}
+                    
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
