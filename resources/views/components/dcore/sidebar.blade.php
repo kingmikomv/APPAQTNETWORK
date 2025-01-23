@@ -100,15 +100,13 @@
                 </ul>
             </li>
 
-            <li class="dropdown {{ request()->routeIs('member', 'undianadmin') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->routeIs('transaksiCoin', 'undianadmin') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-money-bill-wave"></i> <span>Transaksi</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{ request()->routeIs('member') ? 'active' : '' }}">
-                        <a href="{{ route('member') }}"><i class="fas fa-coins"></i> Transaksi Coin</a>
+                    <li class="{{ request()->routeIs('transaksiCoin') ? 'active' : '' }}">
+                        <a href="{{ route('transaksiCoin') }}"><i class="fas fa-coins"></i> Coin</a>
                     </li>
-                    <li class="{{ request()->routeIs('undianadmin') ? 'active' : '' }}">
-                        <a href="{{ route('undianadmin') }}"><i class="fas fa-network-wired"></i> Transaksi Port</a>
-                    </li>
+                  
                 </ul>
             </li>
             @endcan

@@ -294,6 +294,9 @@ class CoinController extends Controller
                 'given_names' => $nama,
                 'payer_email' => $email,
             ],
+            "success_redirect_url" => route('coin.history'),
+            "failure_redirect_url" => route('coin.history'),
+
         ]);
 
         try {
@@ -305,6 +308,7 @@ class CoinController extends Controller
                     'external_id' => $uuid,
                     'invoice_url' => $invoice['invoice_url']
                 ]);
+                
             }
             return redirect($invoice['invoice_url']);
 

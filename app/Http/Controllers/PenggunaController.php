@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CoinTransaction;
 use App\Models\VPN;
 use RouterOS\Query;
 use App\Models\Port;
 use App\Models\User;
 use RouterOS\Client;
+use App\Models\Paket;
 use App\Models\Mikrotik;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Models\CoinTransaction;
 
 class PenggunaController extends Controller
 {
@@ -166,4 +168,35 @@ class PenggunaController extends Controller
 
 
     }
+    public function transaksiCoin()
+    {
+        // Mengambil semua transaksi dengan status 'complete'
+        $transactions = CoinTransaction::orderBy('id', 'desc')->get();
+    
+        // Variabel untuk menyimpan total pemasukan
+        $pemasukan = 0;
+    
+        // Menentukan bulan dan tahun saat ini
+        $currentMonthYear = Carbon::now()->format('m-Y');
+    
+        // Melakukan iterasi untuk setiap transaksi
+        foreach ($transactions as $transaction) {
+            // Pastikan 'paid_at' tidak null dan merupakan tanggal yang valid
+            if ($transaction->paid_at && Carbon::hasFormat($transaction->paid_at, 'Y-m-d\TH:i:s.u\Z')) {
+                // Memeriksa apakah bulan dan tahun transaksi sama dengan bulan dan tahun saat ini
+                if (Carbon::parse($transaction->paid_at)->setTimezone('Asia/Jakarta')->format('m-Y') == $currentMonthYear) {
+                    // Menambahkan harga transaksi ke total pemasukan
+                    $pemasukan += $transaction->price;
+                }
+            }
+        }
+    
+        // Menampilkan pemasukan untuk debugging
+        //dd($pemasukan);
+    
+        // Return ke tampilan jika perlu
+        return view('Dashboard/PENGGUNA/MEMBER/TRANSAKSI/transaksiCoin', compact('transactions', 'pemasukan')); 
+    }
+  
+
 }

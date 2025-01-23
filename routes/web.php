@@ -155,6 +155,14 @@ Route::group(['prefix' => '/home/undian', 'middleware' => ['auth', 'verified', '
     });
 });
 
+Route::group(['prefix' => '/home/transaksi', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null) {
+    Route::controller(PenggunaController::class)->group(function ($id = null) {
+        Route::get('/coin', 'transaksiCoin')->name('transaksiCoin');
+
+
+    });
+});
+
 
 
 Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', 'can:isAdmin']], function($id = null, $pembelianId = null) {

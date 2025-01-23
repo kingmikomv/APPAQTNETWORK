@@ -92,7 +92,7 @@
                             <div class="card-header">
                                 <h4 style="font-size: 20px;"><i class="fas fa-network-wired"></i> Beli Port</h4>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body table-responsive">
                                 <!-- Display User's Current Coins -->
 
                                 {{-- <a class="btn btn-warning btn-block mt-3" data-toggle="collapse" href="#collapseExample"
