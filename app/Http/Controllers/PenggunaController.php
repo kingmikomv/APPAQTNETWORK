@@ -24,27 +24,32 @@ class PenggunaController extends Controller
             $member->mikrotik = Mikrotik::where('unique_id', $member->unique_id)->count();
         }
 
-        // Ambil data dengan pembelian_id yang unik dan hitung total per ID
-        $port2 = Port::select('pembelian_id', 'created_at', 'status_pembelian', 'bukti')
-            ->get()
-            ->groupBy('pembelian_id')
-            ->map(function ($group) {
-                return [
-                    'pembelian_id' => $group->first()->pembelian_id,
-                    'created_at' => $group->first()->created_at,
-                    'status_pembelian' => $group->first()->status_pembelian,
-                    'bukti' => $group->first()->bukti,
-                    'total_count' => $group->count(), // Hitung jumlah pembelian_id yang sama
-                    'total_price' => $group->count() * 10000, // Kalkulasi total harga
-                ];
-            });
-
-       
-        // Hitung total harga dan kumpulkan data
-        $summary = CoinTransaction::where('status', 'pending')->get();
 //dd($summary);
-        return view('Dashboard/PENGGUNA/MEMBER/index', compact('members', 'port2', 'summary'));
+        return view('Dashboard/PENGGUNA/MEMBER/index', compact('members'));
     }
+
+
+    public function sendCoin(Request $request)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'coin_amount' => 'required|integer|min:1',
+    ]);
+
+    // Fetch the recipient user
+    $user = User::find($validated['user_id']);
+
+    if (!$user) {
+        return back()->with('error', 'User not found.');
+    }
+
+    // Update the user's coin amount
+    $user->total_coin += $validated['coin_amount'];
+    $user->save();
+
+    return back()->with('success', "Successfully sent {$validated['coin_amount']} coins to {$user->name}.");
+}
+
 
     public function daftarvpn(Request $request)
     {

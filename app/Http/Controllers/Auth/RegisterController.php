@@ -54,6 +54,7 @@ class RegisterController extends Controller
             'unique_id' => ['string'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'telefon' => ['required', 'string', 'max:255'],
         ]);
     }
 
@@ -70,6 +71,7 @@ class RegisterController extends Controller
             'unique_id' => Str::uuid()->toString(), // Menghasilkan unique_id otomatis menggunakan UUID
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'telefon' => $data['telefon'],
         ]);
     }
 }

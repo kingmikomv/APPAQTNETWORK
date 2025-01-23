@@ -24,6 +24,7 @@
                                             <td>Role</td>
                                             <td>Jumlah VPN</td>
                                             <td>Jumlah Mikrotik</td>
+                                            <td>Total Coin</td>
                                             <td>OPT</td>
                                         </tr>
                                     </thead>
@@ -37,6 +38,7 @@
                                             <td>{{$mb->role}}</td>
                                             <td>{{$mb->vpn}}</td>
                                             <td>{{$mb->mikrotik}}</td>
+                                            <td>{{$mb->total_coin}} Coin</td>
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -45,7 +47,10 @@
                                                     <div class="dropdown-menu">
                                                       <a class="dropdown-item" href="{{route('daftarvpn', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar VPN</a>
                                                       <a class="dropdown-item" href="{{route('daftarmikrotik', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar MikroTik</a>
-                                                      <a class="dropdown-item" href="#"><i class="fas fa-trash"></i> Hapus Akun</a>
+                                                      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#sendCoinModal" data-id="{{ $mb->id }}" data-name="{{ $mb->name }}">
+                                                        <i class="fas fa-arrow-right"></i> Kirim Coin
+                                                    </a>                                                      
+                                                    <a class="dropdown-item" href="#"><i class="fas fa-trash"></i> Hapus Akun</a>
                                                     </div>
                                                   </div>
                                             </td>
@@ -67,7 +72,37 @@
             </section>
             
         </div>
-
+        <div class="modal fade" id="sendCoinModal" tabindex="-1" role="dialog" aria-labelledby="sendCoinModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{{ route('send.coin') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="sendCoinModalLabel">Kirim Coin</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="user_id" id="userId">
+                            <div class="form-group">
+                                <label for="recipientName">Nama</label>
+                                <input type="text" class="form-control" id="recipientName" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="coinAmount">Jumlah Coin</label>
+                                <input type="number" class="form-control" name="coin_amount" id="coinAmount" required min="1">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Kirim</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
 
 
 
@@ -101,6 +136,35 @@
                 message.removeClass('d-none');
             }
         });
+
+        $('#sendCoinModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var userId = button.data('id');
+    var userName = button.data('name');
+
+    var modal = $(this);
+    modal.find('#userId').val(userId);
+    modal.find('#recipientName').val(userName);
+});
+
     });
 
 </script>
+
+@if (session('success'))
+              <script>
+                  Swal.fire({
+                      icon: 'success',
+                      title: '{{ session('success') }}',
+                      showConfirmButton: true
+                  });
+              </script>
+          @elseif (session('error'))
+              <script>
+                  Swal.fire({
+                      icon: 'error',
+                      title: '{{ session('error') }}',
+                      showConfirmButton: true
+                  });
+              </script>
+          @endif

@@ -40,8 +40,8 @@ Route::post('/xendit/webhook', [CoinController::class, 'webhook'])->name('xendit
 Auth::routes(['verify' => true, 'reset' => true]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
+Route::get('/home/myakun', [App\Http\Controllers\HomeController::class, 'myakun'])->name('myakun');
+Route::post('/home/myakun/update', [App\Http\Controllers\HomeController::class, 'updateAccount'])->name('account.update');
 // VPN Routes
 Route::group(['prefix' => '/home/datavpn', 'middleware' => ['auth', 'verified']], function() {
     Route::controller(VPNController::class)->group(function () {
@@ -170,6 +170,7 @@ Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', '
         Route::get('/', 'index')->name('member');
         Route::get('/acc/{id}/yes','acc')->name('acc');
         //Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
+        Route::post('/send-coin', [PenggunaController::class, 'sendCoin'])->name('send.coin');
 
 
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');

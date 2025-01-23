@@ -24,7 +24,6 @@ class CreateCoinTransactionsTable extends Migration
             $table->string('paid_at')->nullable();
             $table->string('payment_method')->nullable();
             $table->string('payment_channel')->nullable(); 
-            $table->string('payment_channel')->nullable(); 
             $table->string('ewallet_type')->nullable();
             $table->string('payment_source')->nullable();
             $table->timestamps();

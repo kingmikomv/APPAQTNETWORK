@@ -66,7 +66,7 @@ class CoinController extends Controller
                     'Authorization' => 'g3ZXCoCHeR1y75j4xJoz', // Ganti dengan token Anda
                 ],
                 'form_params' => [
-                    'target' => '085155361211',
+                    'target' => auth()->user()->telefon,
                     'message' => $message,
                     'countryCode' => '62', // Optional
                 ],
@@ -324,7 +324,7 @@ class CoinController extends Controller
         $email = $user->email;
 
         // Set API Key Xendit
-        Configuration::setXenditKey("xnd_development_89F4BMkA1W7GcAeU6vu5l07Dh7Y5Y15bXhxJICLGlk0SfeKPhdaGR78ejP0SAhF");
+        Configuration::setXenditKey("xnd_development_pvO9UBoEWcj1zWGdIVBmO0CLkiPGgIIZEHXfHL42EZIy5TA3CtuaXp39AUzB55xC");
         $apiInstance = new InvoiceApi();
 
         $create_invoice_request = new CreateInvoiceRequest([
@@ -457,7 +457,7 @@ class CoinController extends Controller
                 'Authorization' => 'g3ZXCoCHeR1y75j4xJoz', // Ganti dengan token Anda
             ],
             'form_params' => [
-                'target' => '085155361211',
+                'target' => $coin->telefon,
                 'message' => $message,
                 'countryCode' => '62', // Optional
             ],

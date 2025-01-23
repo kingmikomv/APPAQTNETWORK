@@ -100,7 +100,7 @@
                 </ul>
             </li>
 
-            <li class="dropdown {{ request()->routeIs('transaksiCoin', 'undianadmin') ? 'active' : '' }}">
+            <li class="dropdown {{ request()->routeIs('transaksiCoin') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-money-bill-wave"></i> <span>Transaksi</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ request()->routeIs('transaksiCoin') ? 'active' : '' }}">
@@ -109,13 +109,23 @@
                   
                 </ul>
             </li>
+
             @endcan
+            <li class="dropdown ">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-user"></i> <span>Profil</span></a>
+                <ul class="dropdown-menu">
+                    <li class="">
+                        <a href="{{route('myakun')}}"><i class="fas fa-key"></i> Akun Saya</a>
+                    </li>
+                  
+                </ul>
+            </li>
         </ul>
 
         <!-- Footer -->
         <div class="mt-4 mb-4 p-3 hide-sidebar-mini">
             <a href="#" class="btn btn-primary btn-lg btn-block btn-icon-split">
-                <i class="fas fa-rocket"></i> Billing
+                <i class="fas fa-rocket"></i> Tutorial
             </a>
         </div>
     </aside>
