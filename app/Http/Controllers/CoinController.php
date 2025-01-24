@@ -632,7 +632,7 @@ class CoinController extends Controller
 
             Paket::create([
                 'nama' => $user,
-                'coin' => 250,
+                'coin' => 200,
                 'unique_id' => $unique_id,
                 'paket' => $paket,
                 'port' => $newPort,
