@@ -9,22 +9,27 @@ use Symfony\Component\HttpFoundation\Response;
 class VerifyXenditSignature
 {
     public function handle(Request $request, Closure $next): Response
-    {
-        // Ambil Xendit-Callback-Signature dari header
-        $signature = $request->header('X-CALLBACK-SIGNATURE');
-        $secretKey = env('xnd_development_pvO9UBoEWcj1zWGdIVBmO0CLkiPGgIIZEHXfHL42EZIy5TA3CtuaXp39AUzB55xC'); // Simpan secret key di .env
+{
+    // Ambil X-CALLBACK-TOKEN dari header
+    $callbackToken = $request->header('x-callback-token');
 
-        // Data payload
-        $payload = $request->getContent();
+    // Tetapkan Secret Key langsung di kode
+    $secretKey = 'B9kqMxq7DnSO6EliPpYh9Q8kbaKWUl9yO6agmemPdxaPZaIM';
 
-        // Buat HMAC hash untuk verifikasi
-        $computedSignature = hash_hmac('sha256', $payload, $secretKey);
+    // Data payload dari body request
+    $payload = $request->getContent();
 
-        if ($signature !== $computedSignature) {
-            // Jika signature tidak cocok, kembalikan respon error
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+    // Buat HMAC hash untuk verifikasi signature
+    $computedSignature = hash_hmac('sha256', $payload, $secretKey);
 
-        return $next($request);
+    // Bandingkan token yang diterima dengan token yang dihitung
+    if ($callbackToken !== $computedSignature) {
+        // Jika token tidak cocok, kembalikan respon error
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    // Jika token valid, teruskan request
+    return $next($request);
+}
+
 }
