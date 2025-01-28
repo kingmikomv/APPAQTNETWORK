@@ -172,6 +172,7 @@ Route::group(['prefix' => '/home/member', 'middleware' => ['auth', 'verified', '
         Route::get('/acc/{id}/yes','acc')->name('acc');
         //Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');
         Route::post('/send-coin', [PenggunaController::class, 'sendCoin'])->name('send.coin');
+        Route::post('/edit-coin', [PenggunaController::class, 'editCoin'])->name('edit.coin');
 
 
         Route::get('/daftarvpn', 'daftarvpn')->name('daftarvpn');

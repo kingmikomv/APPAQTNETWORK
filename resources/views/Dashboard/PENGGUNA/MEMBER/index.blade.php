@@ -42,18 +42,26 @@
                                             <td>
                                                 <div class="dropdown">
                                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                                      Option
+                                                        Option
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                      <a class="dropdown-item" href="{{route('daftarvpn', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar VPN</a>
-                                                      <a class="dropdown-item" href="{{route('daftarmikrotik', ['unique_id' => $mb->unique_id])}}"><i class="fas fa-eye"></i> Daftar MikroTik</a>
-                                                      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#sendCoinModal" data-id="{{ $mb->id }}" data-name="{{ $mb->name }}">
-                                                        <i class="fas fa-arrow-right"></i> Kirim Coin
-                                                    </a>                                                      
-                                                    <a class="dropdown-item" href="#"><i class="fas fa-trash"></i> Hapus Akun</a>
+                                                        <a class="dropdown-item" href="{{ route('daftarvpn', ['unique_id' => $mb->unique_id]) }}">
+                                                            <i class="fas fa-eye"></i> Daftar VPN
+                                                        </a>
+                                                        <a class="dropdown-item" href="{{ route('daftarmikrotik', ['unique_id' => $mb->unique_id]) }}">
+                                                            <i class="fas fa-eye"></i> Daftar MikroTik
+                                                        </a>
+                                                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#sendCoinModal" data-id="{{ $mb->id }}" data-name="{{ $mb->name }}">
+                                                            <i class="fas fa-arrow-right"></i> Kirim Coin
+                                                        </a>
+                                                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editCoinModal" data-id="{{ $mb->id }}" data-name="{{ $mb->name }}" data-coin="{{ $mb->total_coin }}">
+                                                            <i class="fas fa-edit"></i> Edit Coin
+                                                        </a>
+                                                        <a class="dropdown-item" href="#"><i class="fas fa-trash"></i> Hapus Akun</a>
                                                     </div>
-                                                  </div>
+                                                </div>
                                             </td>
+                                            
                                         </tr>
 
                                           
@@ -72,6 +80,39 @@
             </section>
             
         </div>
+
+        <div class="modal fade" id="editCoinModal" tabindex="-1" role="dialog" aria-labelledby="editCoinModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{{ route('edit.coin') }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editCoinModalLabel">Edit Jumlah Coin</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="user_id" id="editUserId">
+                            <div class="form-group">
+                                <label for="editRecipientName">Nama</label>
+                                <input type="text" class="form-control" id="editRecipientName" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCoinAmount">Jumlah Coin</label>
+                                <input type="number" class="form-control" name="coin_amount" id="editCoinAmount" required min="0">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+
         <div class="modal fade" id="sendCoinModal" tabindex="-1" role="dialog" aria-labelledby="sendCoinModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -149,6 +190,22 @@
 
     });
 
+</script>
+<script>
+    $(document).ready(function () {
+        // Populate modal for editing coin
+        $('#editCoinModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var userId = button.data('id');
+            var userName = button.data('name');
+            var userCoin = button.data('coin');
+
+            var modal = $(this);
+            modal.find('#editUserId').val(userId);
+            modal.find('#editRecipientName').val(userName);
+            modal.find('#editCoinAmount').val(userCoin);
+        });
+    });
 </script>
 
 @if (session('success'))

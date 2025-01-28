@@ -29,38 +29,34 @@
                                     </div>
                                 </div>
 
-                                <form id="purchaseCoinsForm" method="POST"
-                                action="{{ route('purchase.coin') }}">
-                                @csrf
-                                <div class="form-group">
-                                    <label for="Coins" style="font-weight: bold;">Pilih Jumlah
-                                        Coin</label>
-                                    <select name="coin_amount" id="Coins" class="form-control">
-                                        <option value="5">5 Coin - Rp10,500</option>
-                                        <option value="10">10 Coin - Rp21,000</option>
-                                        <option value="20">20 Coin - Rp39,500</option>
-                                        <option value="50">50 Coin - Rp97,000</option>
-                                        <option value="100">100 Coin - Rp152,500</option>
-                                        <option value="200">200 Coin - Rp295,000</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-6 mt-2">
-                                            <button type="submit" class="btn btn-primary btn-block">
-                                                <i class="fas fa-shopping-cart"></i> Masukan Keranjang
-                                            </button>
-                                        </div>
-                                        <div class="col-md-6 mt-2">
-                                            <a class="btn btn-primary btn-block"
-                                                href="{{ route('coin.history') }}">
-                                                <i class="fas fa-history"></i> Riwayat Keranjang
-                                            </a>
+                                <form id="purchaseCoinsForm" method="POST" action="{{ route('purchase.coin') }}">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label for="Coins" style="font-weight: bold;">Pilih Jumlah Coin</label>
+                                        <select name="coin_amount" id="Coins" class="form-control">
+                                            <option value="5" data-price="Rp10,500">5 Coin - Rp10,500</option>
+                                            <option value="10" data-price="Rp21,000">10 Coin - Rp21,000</option>
+                                            <option value="20" data-price="Rp39,500">20 Coin - Rp39,500</option>
+                                            <option value="50" data-price="Rp97,000">50 Coin - Rp97,000</option>
+                                            <option value="100" data-price="Rp152,500">100 Coin - Rp152,500</option>
+                                            <option value="200" data-price="Rp295,000">200 Coin - Rp295,000</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-6 mt-2">
+                                                <button type="button" id="confirmPurchaseBtn" class="btn btn-primary btn-block">
+                                                    <i class="fas fa-shopping-cart"></i> Masukan Keranjang
+                                                </button>
+                                            </div>
+                                            <div class="col-md-6 mt-2">
+                                                <a class="btn btn-primary btn-block" href="{{ route('coin.history') }}">
+                                                    <i class="fas fa-history"></i> Riwayat Keranjang
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-
-                                </div>
-                            </form>
+                                </form>
 
                                 <!-- Purchase Coins Form -->
 
@@ -71,75 +67,12 @@
                         </div>
                     </div>
 
-                    
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header">
                                 <h4 style="font-size: 20px;"><i class="fas fa-network-wired"></i> Beli Port</h4>
                             </div>
                             <div class="card-body table-responsive">
-                                <!-- Display User's Current Coins -->
-
-                                {{-- <a class="btn btn-warning btn-block mt-3" data-toggle="collapse" href="#collapseExample"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
-                                    <i class="fas fa-network-wired"></i> Beli Port OLT
-                                </a>
-                                <div class="collapse" id="collapseExample">
-                                    <div class="card card-body">
-                                        <div class="row">
-                                            <!-- Paket Per Bulan -->
-                                            <div class="col-md-4">
-                                                <div class="card border-primary shadow-sm">
-                                                    <div class="card-header bg-primary text-white text-center">
-                                                        <h5>Paket Per Bulan</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>20 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: 30 Hari</p>
-                                                        <button class="btn btn-primary btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'bulan']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Paket Per Tahun -->
-                                            <div class="col-md-4">
-                                                <div class="card border-success shadow-sm">
-                                                    <div class="card-header bg-success text-white text-center">
-                                                        <h5>Paket Per Tahun</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>60 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: 12 Bulan</p>
-                                                        <button class="btn btn-success btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'tahun']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Paket Permanen -->
-                                            <div class="col-md-4">
-                                                <div class="card border-danger shadow-sm">
-                                                    <div class="card-header bg-danger text-white text-center">
-                                                        <h5>Paket Permanen</h5>
-                                                    </div>
-                                                    <div class="card-body text-center">
-                                                        <p class="mb-1">Harga: <strong>250 Coin</strong></p>
-                                                        <p class="mb-3">Durasi: Selamanya</p>
-                                                        <button class="btn btn-danger btn-block"
-                                                            onclick="location.href='{{ route('beli.paket', ['paket' => 'permanen']) }}'">
-                                                            Beli Sekarang
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> --}}
                                 <table class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
@@ -155,30 +88,43 @@
                                             <td>30 Hari</td>
                                             <td>20 Coin</td>
                                             <td>
-                                                <a href="{{ route('beli.paket', ['paket' => 'bulan']) }}"
-                                                    class="btn btn-primary">Beli Sekarang</a>
+                                                <button class="btn btn-primary beli-btn" data-paket="30 Hari" data-coin="20" 
+                                                    data-url="{{ route('beli.paket', ['paket' => 'bulan']) }}">
+                                                    Beli Sekarang
+                                                </button>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>2</td>
                                             <td>1 Tahun</td>
                                             <td>60 Coin</td>
                                             <td>
-                                                <a href="{{ route('beli.paket', ['paket' => 'tahun']) }}"
-                                                    class="btn btn-primary">Beli Sekarang</a>
+                                                <button class="btn btn-primary beli-btn" data-paket="1 Tahun" data-coin="60" 
+                                                    data-url="{{ route('beli.paket', ['paket' => 'tahun']) }}">
+                                                    Beli Sekarang
+                                                </button>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>3</td>
                                             <td>Unlimited</td>
                                             <td>200 Coin</td>
                                             <td>
-                                                <a href="{{ route('beli.paket', ['paket' => 'permanen']) }}"
-                                                    class="btn btn-primary">Beli Sekarang</a>
+                                                <button class="btn btn-primary beli-btn" data-paket="Unlimited" data-coin="200" 
+                                                    data-url="{{ route('beli.paket', ['paket' => 'permanen']) }}">
+                                                    Beli Sekarang
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Tambahkan SweetAlert2 -->
+                  
+                    
                     <!-- Form to Add VPN -->
                     <div class="col-md-12">
                         <div class="card">
@@ -430,8 +376,61 @@
     }
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // SweetAlert2 untuk tombol beli paket
+        const purchaseButtons = document.querySelectorAll('.beli-btn');
+        purchaseButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const paket = this.dataset.paket;
+                const coin = this.dataset.coin;
+                const url = this.dataset.url;
 
+                Swal.fire({
+                    title: 'Konfirmasi Pembelian',
+                    html: `Apakah Anda yakin ingin membeli paket <b>${paket}</b> dengan harga <b>${coin} Coin</b>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Beli Sekarang!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect ke URL pembelian
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
 
+        // SweetAlert2 untuk formulir pembelian koin
+        const form = document.getElementById('purchaseCoinsForm');
+        const confirmBtn = document.getElementById('confirmPurchaseBtn');
+        const coinSelect = document.getElementById('Coins');
+
+        if (form && confirmBtn && coinSelect) {
+            confirmBtn.addEventListener('click', function () {
+                const selectedOption = coinSelect.options[coinSelect.selectedIndex];
+                const coinAmount = selectedOption.value;
+                const price = selectedOption.dataset.price;
+
+                Swal.fire({
+                    title: 'Konfirmasi Pembelian',
+                    html: `Apakah Anda yakin ingin membeli <b>${coinAmount} Coin</b> dengan harga <b>${price}</b>?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Masukan Keranjang',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Kirim formulir jika dikonfirmasi
+                    }
+                });
+            });
+        }
+    });
+</script>
 
 
 @if (session('success'))

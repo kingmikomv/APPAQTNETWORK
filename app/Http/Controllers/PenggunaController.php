@@ -50,6 +50,20 @@ class PenggunaController extends Controller
     return back()->with('success', "Successfully sent {$validated['coin_amount']} coins to {$user->name}.");
 }
 
+public function editCoin(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'coin_amount' => 'required|integer|min:0',
+    ]);
+
+    $user = User::find($request->user_id);
+    $user->total_coin = $request->coin_amount;
+    $user->save();
+
+    return redirect()->back()->with('success', 'Jumlah coin berhasil diupdate!');
+}
+
 
     public function daftarvpn(Request $request)
     {
