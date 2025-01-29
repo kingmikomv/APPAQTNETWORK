@@ -10,10 +10,58 @@
 
         <div class="main-content">
             <section class="section">
-                
-                
+                <div class="row">
+                    <!-- Card untuk menghitung jumlah transaksi -->
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="card card-statistic-1">
+                            <div class="card-icon bg-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="card-wrap">
+                                <div class="card-header">
+                                    <h4>Transaksi Selesai</h4>
+                                </div>
+                                <div class="card-body">
+                                    {{ $transactions->whereIn('status', ['SUCCESS', 'success', 'PAID', 'paid', 'SETTLE', 'settle', 'complete'])->count() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="card card-statistic-1">
+                            <div class="card-icon bg-warning">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="card-wrap">
+                                <div class="card-header">
+                                    <h4>Transaksi Pending</h4>
+                                </div>
+                                <div class="card-body">
+                                    {{ $transactions->whereIn('status', ['PENDING', 'pending'])->count() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <div class="card card-statistic-1">
+                            <div class="card-icon bg-primary">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="card-wrap">
+                                <div class="card-header">
+                                    <h4>Total Pendapatan Bulan Ini</h4>
+                                </div>
+                                <div class="card-body">
+                                    Rp{{ number_format($transactions->whereIn('status', ['SUCCESS', 'success', 'PAID', 'paid', 'SETTLE', 'settle', 'complete'])->filter(function($transaction) {
+                                        return \Carbon\Carbon::parse($transaction->paid_at)->isCurrentMonth();
+                                    })->sum('price'), 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row no-gutters">
-                 
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
@@ -53,10 +101,11 @@
                                                     <td>
                                                         @if ($transaction->status == 'PENDING' || $transaction->status == 'pending')
                                                         <span class="badge bg-warning">Menunggu</span>
-                                                    @elseif ($transaction->status == 'SUCCESS' || $transaction->status == 'success' || $transaction->status == 'PAID' || $transaction->status == 'paid' || $transaction->status == 'SETTLE' || $transaction->status == 'settle' || $transaction->status == 'complete')
+                                                        @elseif ($transaction->status == 'SUCCESS' || $transaction->status == 'success' || $transaction->status == 'PAID' || $transaction->status == 'paid' || $transaction->status == 'SETTLE' || $transaction->status == 'settle' || $transaction->status == 'complete')
                                                         <span class="badge bg-success">Selesai</span>
-                                                    @endif
-                                                    
+                                                        @elseif ($transaction->status == 'CANCELED' || $transaction->status == 'canceled')
+                                                        <span class="badge bg-danger">Dibatalkan</span>
+                                                        @endif
                                                     </td>
                                                     <td>
                                                         @if($transaction->payment_method == 'BANK_TRANSFER')

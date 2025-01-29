@@ -71,6 +71,21 @@ Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verifi
     });
 });
 
+Route::group(['prefix' => '/home/shop', 'middleware' => ['auth', 'verified']], function() {
+    Route::controller(CoinController::class)->group(function () {
+        Route::get('/', 'index')->name('shop');
+        Route::get('/payment', [CoinController::class, 'showTransactions'])->name('payment.transactions');
+        Route::get('/process-payment/{id}/yes', [CoinController::class, 'processPayment'])->name('payment.process');
+        Route::get('/process-payment/{id}/cancel', [CoinController::class, 'cancelPayment'])->name('payment.cancel');
+        Route::get('/invoice/{external_id}', [CoinController::class, 'generatePDF'])->name('invoice.pdf');
+        Route::get('/beli/{paket}', [CoinController::class, 'beliPaket'])->name('beli.paket');
+        Route::post('/purchase-coin', [CoinController::class, 'purchase'])->name('purchase.coin');
+    
+        Route::get('/perpanjang/{paket}/{port}/{unique_id}/yes', [CoinController::class, 'perpanjangPaket'])->name('perpanjang.paket');
+
+    });
+});
+
 // OLT Routes
 Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']], function($id = null, $unique_id = null, $pembelian_id = null ) {
     Route::controller(OLTController::class)->group(function ($id = null, $unique_id = null, $pembelian_id = null ) {
@@ -79,28 +94,7 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
         Route::post('/tambaholt', 'tambaholt')->name('tambaholt');
         Route::get('/aksesolt', 'aksesOLT')->name('aksesolt');
         Route::get('/{id}/hapusolt', 'hapusolt')->name('hapusolt');
-        Route::post('/beliport', 'beli')->name('beliport');
-        Route::post('/beliport/{unique_id}/{pembelian_id}/{banyaknya}/prosespembayaran', 'prosespembayaran')->name('prosespembayaran');
-        Route::get('/bayar', [OLTController::class, 'bayar'])->name('bayar');
-        Route::post('/bayar/submit', [OLTController::class, 'submitPayment'])->name('payment.submit');
-        Route::post('/purchase-coin', [CoinController::class, 'purchase'])->name('purchase.coin');
-        Route::get('/coin-history', [CoinController::class, 'history'])->name('coin.history');
-        Route::post('/cancel-transaction/{id}', [CoinController::class, 'cancelTransaction'])->name('transaction.cancel');
-        // Route::get('/process-payment/{id}/process', [CoinController::class, 'processPayment'])->name('payment.process');
-       
-       
-        Route::get('/payment', [CoinController::class, 'showTransactions'])->name('payment.transactions');
-
-        // Proses pembayaran untuk transaksi tertentu
-        Route::get('/process-payment/{id}', [CoinController::class, 'processPayment'])->name('payment.process');
-       
-        Route::get('/invoice/{external_id}', [CoinController::class, 'generatePDF'])->name('invoice.pdf');
-
-       
-
-        Route::get('/beli/{paket}', [CoinController::class, 'beliPaket'])->name('beli.paket');
-        Route::get('/perpanjang/{paket}/{port}/{unique_id}/yes', [CoinController::class, 'perpanjangPaket'])->name('perpanjang.paket');
-
+      
 
     });
 });

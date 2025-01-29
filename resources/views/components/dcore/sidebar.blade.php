@@ -84,7 +84,18 @@
                 </ul>
             </li>
             @endif
-
+            @if(['can:isAdmin', 'can:isUser'])
+            <li class="dropdown {{ request()->routeIs('shop') ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-shopping-cart"></i> <span>Beli</span></a>
+                <ul class="dropdown-menu">
+                    <li class="{{ request()->routeIs('shop') ? 'active' : '' }}">
+                        <a href="{{ route('shop') }}"><i class="fas fa-coins"></i> Coin</a>
+                    </li>
+                  
+                </ul>
+            </li>
+            @endif
+            
             <!-- Admin Section -->
             @can('isAdmin')
             <li class="menu-header">Admin</li>

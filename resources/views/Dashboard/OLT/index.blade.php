@@ -9,120 +9,6 @@
             <section class="section">
                 <!-- MAIN OF CENTER CONTENT -->
                 <div class="row"> <!-- Remove gutter space between columns -->
-                    
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 style="font-size: 20px;"><i class="fas fa-coins"></i> Beli Coin</h4>
-                            </div>
-                            <div class="card-body">
-                                <!-- Display User's Current Coins -->
-                                <div class="alert alert-primary d-flex align-items-center" role="alert"
-                                    style="font-size: 1rem;">
-                                    <i class="fas fa-coins"
-                                        style="color: #ffc107;"></i>
-                                    <div>
-                                        <strong> Jumlah Coin Anda Saat Ini : </strong>
-                                        <span class="margin-left: 10px">
-                                             {{ auth()->user()->total_coin }} Coin
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <form id="purchaseCoinsForm" method="POST" action="{{ route('purchase.coin') }}">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label for="Coins" style="font-weight: bold;">Pilih Jumlah Coin</label>
-                                        <select name="coin_amount" id="Coins" class="form-control">
-                                            <option value="5" data-price="Rp10,500">5 Coin - Rp10,500</option>
-                                            <option value="10" data-price="Rp21,000">10 Coin - Rp21,000</option>
-                                            <option value="20" data-price="Rp39,500">20 Coin - Rp39,500</option>
-                                            <option value="50" data-price="Rp97,000">50 Coin - Rp97,000</option>
-                                            <option value="100" data-price="Rp152,500">100 Coin - Rp152,500</option>
-                                            <option value="200" data-price="Rp295,000">200 Coin - Rp295,000</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-6 mt-2">
-                                                <button type="button" id="confirmPurchaseBtn" class="btn btn-primary btn-block">
-                                                    <i class="fas fa-shopping-cart"></i> Masukan Keranjang
-                                                </button>
-                                            </div>
-                                            <div class="col-md-6 mt-2">
-                                                <a class="btn btn-primary btn-block" href="{{ route('coin.history') }}">
-                                                    <i class="fas fa-history"></i> Riwayat Keranjang
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <!-- Purchase Coins Form -->
-
-
-
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 style="font-size: 20px;"><i class="fas fa-network-wired"></i> Beli Port</h4>
-                            </div>
-                            <div class="card-body table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Paket</th>
-                                            <th>Coin</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>30 Hari</td>
-                                            <td>20 Coin</td>
-                                            <td>
-                                                <button class="btn btn-primary beli-btn" data-paket="30 Hari" data-coin="20" 
-                                                    data-url="{{ route('beli.paket', ['paket' => 'bulan']) }}">
-                                                    Beli Sekarang
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>1 Tahun</td>
-                                            <td>60 Coin</td>
-                                            <td>
-                                                <button class="btn btn-primary beli-btn" data-paket="1 Tahun" data-coin="60" 
-                                                    data-url="{{ route('beli.paket', ['paket' => 'tahun']) }}">
-                                                    Beli Sekarang
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>Unlimited</td>
-                                            <td>200 Coin</td>
-                                            <td>
-                                                <button class="btn btn-primary beli-btn" data-paket="Unlimited" data-coin="200" 
-                                                    data-url="{{ route('beli.paket', ['paket' => 'permanen']) }}">
-                                                    Beli Sekarang
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tambahkan SweetAlert2 -->
                   
                     
                     <!-- Form to Add VPN -->
@@ -141,6 +27,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">No</th>
+                                            <th scope="col">Akses Cepat</th>
                                             <th scope="col">Nama OLT</th>
                                             <th scope="col">IP OLT</th>
                                             <th scope="col">PORT OLT</th>
@@ -148,7 +35,6 @@
                                             <th scope="col">Expire</th>
                                             <th scope="col">Jml. Coin</th>
                                             <th scope="col">Tipe PORT</th>
-                                            <th scope="col">Akses Cepat</th>
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -157,6 +43,12 @@
                                         @foreach ($olts as $olt)
                                             <tr>
                                                 <th scope="row">{{ $no++ }}</th>
+                                                <td>
+                                                    <a href="http://id-1.aqtnetwork.my.id:{{ $olt->portvpn }}"
+                                                        target="_blank" class="btn btn-primary">
+                                                        Akses Cepat
+                                                    </a>
+                                                </td>
                                                 <td>{{ $olt->site }}</td>
                                                 <td>{{ $olt->ipolt }}</td>
                                                 <td>{{ $olt->portolt }}</td>
@@ -190,12 +82,7 @@
 
                                                 <td>{{ $olt->paket }}</td>
                                                 
-                                                <td>
-                                                    <a href="http://id-1.aqtnetwork.my.id:{{ $olt->portvpn }}"
-                                                        target="_blank" class="btn btn-primary">
-                                                        Akses Cepat
-                                                    </a>
-                                                </td>
+                                                
                                                 <td>
                                                     <div class="dropdown">
                                                         <button class="btn btn-primary dropdown-toggle" type="button"
@@ -214,9 +101,10 @@
                                                                     Expire</a>
                                                             @endif
 
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('hapusolt', $olt->id) }}">Hapus</a>
+                                                           
                                                             <a class="dropdown-item" href="#">Edit</a>
+                                                            <a class="dropdown-item"
+                                                            href="{{ route('hapusolt', $olt->id) }}">Hapus</a>
                                                         </div>
                                                     </div>
                                                 </td>
