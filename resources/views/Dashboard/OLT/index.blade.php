@@ -93,7 +93,7 @@
                                                             <a class="dropdown-item" href="#"
                                                                 data-toggle="modal" data-target="#scriptModal"
                                                                 onclick="generateScript('{{ $olt->ipolt }}', '{{ $olt->portvpn }}', '{{ $olt->portolt }}')">
-                                                                Lihat Script
+                                                               <i class="fas fa-eye"></i> Lihat Script
                                                             </a>
                                                             <!-- Tampilkan opsi Perpanjang Expire hanya jika tidak permanen -->
                                                             @if ($olt->expire !== null && $olt->expire < \Carbon\Carbon::now() && strtolower($olt->paket) !== 'permanen')
@@ -102,9 +102,11 @@
                                                             @endif
 
                                                            
-                                                            <a class="dropdown-item" href="#">Edit</a>
-                                                            <a class="dropdown-item"
-                                                            href="{{ route('hapusolt', $olt->id) }}">Hapus</a>
+                                                            <a class="dropdown-item" href="#" onclick="openEditModal('{{ $olt->id }}', '{{ $olt->site }}', '{{ $olt->ipolt }}', '{{ $olt->portolt }}', '{{ $olt->ipvpn }}')">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </a>
+                                                                                                                        <a class="dropdown-item text-danger"
+                                                            href="{{ route('hapusolt', $olt->id) }}"><i class="fas fa-trash"></i> Hapus</a>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -128,7 +130,50 @@
         </div>
         <x-dcore.footer />
 
-
+        <div class="modal fade" id="editOltModal" tabindex="-1" aria-labelledby="editOltModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="editOltForm" action="{{ route('update.olt') }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editOltModalLabel">Edit Data OLT</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>                        </div>
+                        <div class="modal-body">
+                            <!-- Hidden input for OLT ID -->
+                            <input type="hidden" name="id" id="oltIdInput">
+        
+                            <div class="form-group">
+                                <label for="namaAkun">Nama OLT</label>
+                                <input type="text" class="form-control" placeholder="Nama OLT" name="site" id="namaAkunInput">
+                            </div>
+        
+                            <div class="form-group">
+                                <label for="ipolt">IP OLT</label>
+                                <input type="text" class="form-control" placeholder="IP OLT (Cth. 192.168.xxx.xxx)" name="ipolt" id="ipOltInput">
+                            </div>
+        
+                            <div class="form-group">
+                                <label for="portolt">Port OLT</label>
+                                <input type="text" class="form-control" placeholder="Port OLT (Cth. 80, 8080)" name="portolt" id="portOltInput">
+                            </div>
+        
+                            <div class="form-group">
+                                <label for="ipvpn">IP Address VPN</label>
+                                <input type="text" class="form-control" placeholder="IP Address VPN" name="ipvpn" id="ipVpnInput">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
         <div class="modal fade" id="addModalOlt" tabindex="-1" role="dialog" aria-labelledby="addVpnModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg" role="document">
@@ -318,6 +363,21 @@
             });
         }
     });
+</script>
+
+<script>
+    function openEditModal(id, site, ipolt, portolt, ipvpn) {
+    // Set input values
+    document.getElementById('oltIdInput').value = id;
+    document.getElementById('namaAkunInput').value = site;
+    document.getElementById('ipOltInput').value = ipolt;
+    document.getElementById('portOltInput').value = portolt;
+    document.getElementById('ipVpnInput').value = ipvpn;
+
+    // Show modal
+    $('#editOltModal').modal('show');
+}
+
 </script>
 
 

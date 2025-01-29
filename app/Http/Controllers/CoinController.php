@@ -530,4 +530,19 @@ class CoinController extends Controller
         // Unduh atau tampilkan PDF
         return $pdf->stream('Invoice_Transaksi_' . $transaction->external_id . '.pdf');
     }
+    public function generateReport(Request $request)
+{
+    $startDate = $request->input('start_date');
+    $endDate = $request->input('end_date');
+
+    // Query transactions based on the selected date range
+    $transactions = CoinTransaction::whereBetween('paid_at', [$startDate, $endDate])
+        ->orderBy('paid_at', 'desc')
+        ->get();
+        return view('Dashboard/SHOP/laporan', compact('transactions'));
+    // Generate report logic (e.g., generate a PDF)
+    // Example: return view('report', compact('transactions'));
+}
+
+    
 }

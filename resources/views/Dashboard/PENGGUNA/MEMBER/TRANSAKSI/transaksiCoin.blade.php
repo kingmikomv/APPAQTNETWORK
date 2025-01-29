@@ -60,7 +60,31 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-calendar-alt"></i> Cari Laporan Berdasarkan Tanggal</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ route('generate.report') }}" method="GET">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="start_date">Tanggal Mulai</label>
+                                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="end_date">Tanggal Selesai</label>
+                                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Cari Laporan</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="row no-gutters">
                     <div class="col-12">
                         <div class="card">

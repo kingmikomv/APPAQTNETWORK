@@ -74,6 +74,8 @@ Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verifi
 Route::group(['prefix' => '/home/shop', 'middleware' => ['auth', 'verified']], function() {
     Route::controller(CoinController::class)->group(function () {
         Route::get('/', 'index')->name('shop');
+        Route::get('/generate-report', [CoinController::class, 'generateReport'])->name('generate.report');
+
         Route::get('/payment', [CoinController::class, 'showTransactions'])->name('payment.transactions');
         Route::get('/process-payment/{id}/yes', [CoinController::class, 'processPayment'])->name('payment.process');
         Route::get('/process-payment/{id}/cancel', [CoinController::class, 'cancelPayment'])->name('payment.cancel');
@@ -94,7 +96,8 @@ Route::group(['prefix' => '/home/dataolt', 'middleware' => ['auth', 'verified']]
         Route::post('/tambaholt', 'tambaholt')->name('tambaholt');
         Route::get('/aksesolt', 'aksesOLT')->name('aksesolt');
         Route::get('/{id}/hapusolt', 'hapusolt')->name('hapusolt');
-      
+        Route::put('/update-olt', [OltController::class, 'update'])->name('update.olt');
+
 
     });
 });

@@ -252,254 +252,35 @@ class OLTController extends Controller
         }
     }
 
-    public function beli(Request $request)
+    public function update(Request $request)
     {
-        $namainput = $request->input('nama');
-        $banyaknya = $request->input('banyaknya');
-
-        // Generate unique ID for pembelian
-        $pembelian_id = 'AQT-' . uniqid() . mt_rand(100, 9999);
-
-        // Cek user berdasarkan unique_id
-        $cek = User::where('unique_id', $namainput)->first();
-
-        if (!$cek) {
-            return redirect()->back()->with('error', 'Data Tidak Ada!');
-        }
-
-        // Jika user ditemukan, tampilkan halaman invoice
-        $billed = $cek->name;
-        $unique = $cek->unique_id;
-        $email = $cek->email;
-
-        return view('Dashboard.OLT.co', compact('namainput', 'banyaknya', 'pembelian_id', 'billed', 'unique', 'email'));
-    }
-
-    public function prosespembayaran(Request $request, $unique_id, $pembelian_id)
-    {
-        // Validasi input
-        $validated = $request->validate([
-            'unique_id' => 'required|exists:users,unique_id',
-            'pembelian_id' => 'required|string',
-            'banyaknya' => 'required|integer|min:1',
-        ]);
-        $cek = User::where('unique_id', $unique_id)->first();
-        // Ambil jumlah yang dibeli
-        $banyaknya = $validated['banyaknya'];
-        //dd($banyaknya);
-        // Proses logika pembayaran di sini
-        // Masukkan ke database satu per satu berdasarkan jumlah yang dibeli
-
-        if ($banyaknya == 1) {
-            Port::create([
-                'nama' => $cek->name,
-                'unique_id' => $validated['unique_id'],
-                'pembelian_id' => $validated['pembelian_id'],
-                'status_pembelian' => '0',
-                'status_port' => '0',
-                'port' => null,
-                'bukti' => null,
-                'banyaknya' => $banyaknya,
-            ]);
-        } else {
-            for ($i = 0; $i < $banyaknya; $i++) {
-
-                Port::create([
-                    'nama' => $cek->name,
-                    'unique_id' => $validated['unique_id'],
-                    'pembelian_id' => $validated['pembelian_id'],
-                    'status_pembelian' => '0',
-                    'status_port' => '0',
-                    'port' => null,
-                    'bukti' => null,
-                    'banyaknya' => $banyaknya,
-
-                ]);
-            }
-        }
-
-
-        // Redirect kembali dengan pesan sukses
-        return redirect()->route('dataolt')->with('success', 'Pembayaran berhasil diproses dan data berhasil disimpan!');
-    }
-
-    public function bayar(Request $request)
-    {
-        // Ambil parameter pembelian_id dari URL
-        $pembelian_id = $request->query('pembelian_id');
-        $dataPort = Port::where('unique_id', auth()->user()->unique_id)->where('pembelian_id', $pembelian_id)->get();
-        $hitung = 10000 * $dataPort->count();
-        //dd($hitung);
-        return view('Dashboard.OLT.bayar', compact('pembelian_id', 'hitung', 'dataPort')); // Ganti 'bayar' dengan nama view yang sesuai
-    }
-    public function submitPayment(Request $request)
-    {
-        // Validasi file upload dan pembelian_id
+        
+        // Validasi data
         $request->validate([
-            'paymentProof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // Max 10MB
-            'pembelian_id' => 'required|exists:port,pembelian_id', // Validasi pembelian_id harus ada di tabel ports
+            'id' => 'required|exists:olt,id', // Pastikan ID ada di tabel olts
+            'site' => 'required|string|max:255',
+            'ipolt' => 'required|ip', // Validasi IP address
+            'portolt' => 'required|numeric',
+            'ipvpn' => 'required|ip', // Validasi IP VPN
         ]);
-
-        // Proses upload file
-        if ($request->hasFile('paymentProof')) {
-            $file = $request->file('paymentProof');
-            $fileName = time() . '_' . auth()->user()->unique_id . "_" . $request->input('pembelian_id') . "_" . $file->getClientOriginalExtension();
-
-            // Menyimpan file ke storage public
-            $path = $file->move('payment_proofs', $fileName);
-
-            // Ambil pembelian_id dari form
-            $pembelian_id = $request->input('pembelian_id');
-
-            // Update status untuk semua entri dengan pembelian_id yang sama
-            $dataPort = Port::where('unique_id', auth()->user()->unique_id)->where('pembelian_id', $pembelian_id)->get();
-
-            foreach ($dataPort as $port) {
-                // Update status_pembelian dan status_port untuk setiap entri
-                $port->bukti = $fileName;
-                $port->status_pembelian = 2; // Update status_pembelian menjadi 1
-                $port->status_port = 2; // Update status_port menjadi 1
-                $port->save(); // Simpan perubahan ke database
-            }
-
-            // Menyimpan path file atau data lainnya ke database jika diperlukan
-            // PaymentProof::create(['file_path' => $path]);
-
-            // Menampilkan pesan sukses setelah upload
-            return redirect()->route('dataolt')->with('success', 'Pembayaran berhasil diproses tunggu admin mengecek pembayaranmu');
-        }
-
-        // Menampilkan pesan error jika tidak ada file
-        return redirect()->back()->with('error', 'Gagal mengirim bukti pembayaran!');
-    }
-
-
-
-
-
-    public function uploadvpnolt(Request $req)
-    {
-        // Validasi input
-        $validated = $req->validate([
-            'namaakun' => 'required|string',
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ], [
-            'namaakun.required' => 'Nama akun harus diisi.',
-            'username.required' => 'Username harus diisi.',
-            'password.required' => 'Password harus diisi.',
-        ]);
-        $unique = auth()->user()->unique_id;
-        $namaakun = $req->input('namaakun');
-        $username = $req->input('username');
-        $password = $req->input('password');
-
-        $akuncomment = "AQT_OLTVPN_" . $namaakun . "_@_" . auth()->user()->name . "_" . date('H:i:s');
 
         try {
-            // Konfigurasi koneksi ke MikroTik
-            $client = new Client([
-                'host' => 'id-1.aqtnetwork.my.id',
-                'user' => 'admin',
-                'pass' => 'bakpao1922',
-            ]);
+            // Cari OLT berdasarkan ID
+            $olt = OLT::findOrFail($request->id);
 
-            // Mengambil semua PPP secrets untuk memeriksa username yang sudah ada
-            $queryAllSecrets = new Query('/ppp/secret/print');
-            $response = $client->query($queryAllSecrets)->read();
+            // Update data OLT
+            $olt->site = $request->site;
+            $olt->ipolt = $request->ipolt;
+            $olt->portolt = $request->portolt;
+            $olt->ipvpn = $request->ipvpn;
+            $olt->save();
 
-            // Cek apakah username sudah ada
-            $existingUsernames = array_column($response, 'name');
-
-            if (in_array($username, $existingUsernames)) {
-                session()->flash('error', 'Username sudah ada, silakan gunakan username lain.');
-                return redirect()->back();
-            }
-
-            // Oktet yang tetap
-            $firstOctet = '176';
-            $secondOctet = 20;
-
-            // Ambil daftar thirdOctets yang sudah digunakan
-            $usedThirdOctets = array_map(function ($secret) {
-                return explode('.', $secret['local-address'])[2];
-            }, $response);
-
-            // Tentukan thirdOctet yang baru
-            $thirdOctetBase = 11;
-            $thirdOctet = $thirdOctetBase;
-            while (in_array($thirdOctet, $usedThirdOctets)) {
-                $thirdOctet++;
-                if ($thirdOctet > 254) {
-                    throw new \Exception("Tidak ada third octet yang tersedia untuk IP addresses.");
-                }
-            }
-
-            // Tentukan fourthOctet untuk lokal dan remote
-            $existingCount = count($response);
-            $fourthOctetLocal = 1;
-            $fourthOctetRemote = 10 + ($existingCount % 255);
-
-            // Generate IP addresses
-            $localIp = "$firstOctet.$secondOctet.$thirdOctet.$fourthOctetLocal";
-            $remoteIp = "$firstOctet.$secondOctet.$thirdOctet.$fourthOctetRemote";
-
-            // Membuat query untuk menambahkan PPP secret
-            $query = new Query('/ppp/secret/add');
-            $query->equal('name', $username)
-                ->equal('password', $password)
-                ->equal('comment', $akuncomment)
-                ->equal('profile', 'IP-Tunnel-VPN')
-                ->equal('local-address', $localIp)
-                ->equal('remote-address', $remoteIp);
-
-            // Eksekusi query
-            $response = $client->query($query)->read();
-
-            if (isset($response['!trap'])) {
-                session()->flash('error', $response['!trap'][0]['message']);
-                return redirect()->back();
-            } else {
-                // Buat aturan NAT
-                $queryAllNAT = new Query('/ip/firewall/nat/print');
-                $natResponse = $client->query($queryAllNAT)->read();
-
-                // Cek jika response NAT tidak kosong dan ambil port yang digunakan
-                $usedPorts = [];
-                foreach ($natResponse as $natRule) {
-                    if (isset($natRule['dst-port'])) {
-                        $usedPorts[] = $natRule['dst-port'];
-                    }
-                }
-
-                // Atur port tujuan (dstPort) yang akan digunakan
-                $dstPort = 20000;
-                while (in_array($dstPort, $usedPorts)) {
-                    $dstPort++;
-                    if ($dstPort > 65535) {
-                        throw new \Exception("Tidak ada port tujuan yang tersedia.");
-                    }
-                }
-
-                VPNOLT::create([
-                    'unique_id' => $unique,
-                    'namaakun' => $namaakun,
-                    'username' => $username,
-                    'password' => $password,
-                    'ipaddress' => $remoteIp,
-                ]);
-
-                session()->flash('success', "VPN OLT Berhasil Dibuat!");
-                return redirect()->back();
-
-                //dd($unique);
-            }
-        } catch (ClientException $e) {
-            session()->flash('error', "Gagal terhubung ke MikroTik: " . $e->getMessage());
-            return redirect()->back();
+            // Redirect dengan pesan sukses
+            return redirect()->back()->with('success', 'Data OLT berhasil diperbarui.');
         } catch (\Exception $e) {
-            session()->flash('error', "Terjadi kesalahan: " . $e->getMessage());
-            return redirect()->back();
+            // Redirect dengan pesan error
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui data OLT: ' . $e->getMessage());
         }
     }
+
 }

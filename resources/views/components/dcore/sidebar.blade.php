@@ -117,6 +117,7 @@
                     <li class="{{ request()->routeIs('transaksiCoin') ? 'active' : '' }}">
                         <a href="{{ route('transaksiCoin') }}"><i class="fas fa-coins"></i> Coin</a>
                     </li>
+                 
                   
                 </ul>
             </li>
