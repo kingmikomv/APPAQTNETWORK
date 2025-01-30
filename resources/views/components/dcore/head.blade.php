@@ -20,6 +20,8 @@
   <link rel="stylesheet" href="{{asset('dbs/assets/css/components.css')}}">
   <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.css" />
   <!-- Custom CSS for wider layout -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.css">
+
   <style>
     /* Mengatur margin dan padding body agar lebih luas */
     body {

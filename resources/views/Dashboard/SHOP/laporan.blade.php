@@ -64,15 +64,19 @@
     </div>
 </div>
 <x-dcore.script />
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.js
+"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.dataTables.js
+"></script>
+<script src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.print.min.js
+"></script>
+
 <script>
-    $('#myTable').DataTable( {
-    buttons: [
-        {
-            extend: 'copy',
-            text: 'Copy to clipboard'
-        },
-        'excel',
-        'pdf'
-    ]
-} );
+   new DataTable('#myTable', {
+    layout: {
+        topStart: {
+            buttons: ['print']
+        }
+    }
+});
 </script>
