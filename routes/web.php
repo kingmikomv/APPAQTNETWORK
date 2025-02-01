@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActiveConnectionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IPController;
@@ -51,6 +52,12 @@ Route::group(['prefix' => '/home/datavpn', 'middleware' => ['auth', 'verified']]
         Route::delete('/{id}', 'hapusvpn')->name('hapusvpn');
     });
 });
+
+Route::get('/home/sync-active-connection', [ActiveConnectionController::class, 'syncActiveConnection'])->name('sync.active.connection');
+
+Route::get('/home/cekdown', [ActiveConnectionController::class, 'index'])->name('cekdown');
+
+
 
 // MIKROTIK Routes
 Route::group(['prefix' => '/home/datamikrotik', 'middleware' => ['auth', 'verified']], function() {

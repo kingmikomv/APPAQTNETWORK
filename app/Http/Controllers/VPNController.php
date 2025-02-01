@@ -123,9 +123,9 @@ class VPNController extends Controller
                 }
 
                 // Atur port tujuan (dstPort) yang akan digunakan
-                $dstPort = 40001;
+                $dstPort = 40001; //1091
                 while (in_array($dstPort, $usedPorts)) {
-                    $dstPort++;
+                    $dstPort++; //2
                     if ($dstPort > 65535) {
                         throw new \Exception("Tidak ada port tujuan yang tersedia.");
                     }
@@ -133,7 +133,7 @@ class VPNController extends Controller
 
 
                 // Increment dstPort by 1 for the MikroTik NAT rule
-                $tambahsatu = $dstPort + 1;
+                $tambahsatu = $dstPort + 1; //3
 
                 // Tentukan portwbx dan cek apakah ada konflik
                 if ($portmkt == null) {
@@ -172,7 +172,7 @@ class VPNController extends Controller
                     }
 
                     // Increment dstPort for the second NAT rule
-                    $dstPort2 = $dstPort + 10;
+                    $dstPort2 = $tambahsatu + 10; //13
 
                     // Buat aturan NAT kedua
                     $natQuery2 = new Query('/ip/firewall/nat/add');

@@ -32,6 +32,10 @@
 
             <!-- Main Menu Section (Shown if connected to MikroTik) -->
             @if(session('mikrotik_connected'))
+            <li class="menu-header">Cek Status</li>
+            <li class="{{ request()->routeIs('cekdown') ? 'active' : '' }}">
+                <a href="{{ route('cekdown', ['ipmikrotik' => session('ipmikrotik')]) }}" class="nav-link"><i class="fas fa-check-circle"></i> <span>Cek Down</span></a>
+            </li>
             <li class="menu-header">Main Menu</li>
             <li class="dropdown {{ request()->routeIs('active-connection', 'aksesschedule', 'aksessecret', 'aksesinterface', 'aksesactivehotspot', 'aksesuserhotspot') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-route"></i> <span>Main Menu</span></a>
@@ -94,10 +98,12 @@
                   
                 </ul>
             </li>
+           
             @endif
             
             <!-- Admin Section -->
             @can('isAdmin')
+     
             <li class="menu-header">Admin</li>
             <li class="dropdown {{ request()->routeIs('member', 'undianadmin') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-users"></i> <span>User</span></a>
