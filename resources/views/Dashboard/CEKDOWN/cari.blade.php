@@ -74,8 +74,8 @@
                                 </button>
                             </div>
 
-                            <div class="card-body">
-                                <div class="table-responsive">
+                            <div class="card-body table-responsive">
+                               
 
                                 <table class="table table-bordered" id="user2">
                                     <thead class="thead-dark">
@@ -93,7 +93,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                                </div>
+                             
                             </div>
                         </div>
                     </div>
@@ -103,8 +103,8 @@
                             <div class="card-header text-center bg-danger text-white">
                                 <h5>Pengguna Isolir</h5>
                             </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
+                            <div class="card-body table-responsive">
+                              
                                     <table class="table table-bordered" id="user">
                                         <thead class="thead-dark">
                                             <tr>
@@ -119,7 +119,7 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
