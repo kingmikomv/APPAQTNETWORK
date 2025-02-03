@@ -223,7 +223,7 @@ class VPNController extends Controller
                         'portwbx' => $portwbx
                     ]);
 
-                    session()->flash('success', "PPP Secret Berhasil Dibuat!");
+                    session()->flash('success', "Akun VPN Berhasil Dibuat!");
                     return redirect()->back();
                 }
 

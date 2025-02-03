@@ -20,129 +20,169 @@ class ActiveConnectionController extends Controller
     
     public function cari(Request $request)
     {
+        // Ambil daftar MikroTik terkait dengan pengguna yang sedang login
         $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
-
         $ipmikrotik = $request->input('option');
-
-        if(!$ipmikrotik) {
-            return view('Dashboard/CEKDOWN/cari', compact('mikrotik'));
-
-        }
-        $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
-        $posisiMikrotik = $data->site;
-        $datavpn = VPN::where('ipaddress', $data->ipmikrotik)
-            ->where('unique_id', auth()->user()->unique_id)
-            ->first();
-        $portapi = $datavpn->portapi ?? null;
     
+        // Jika tidak ada IP MikroTik yang dipilih, kembalikan view awal
+        if (is_null($ipmikrotik)) {
+            return view('Dashboard/CEKDOWN/cari', compact('mikrotik'));
+        }
+    
+        // Cari data MikroTik berdasarkan IP
+        $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
+    
+        // Jika data MikroTik tidak ditemukan, kembalikan dengan pesan error
         if (!$data) {
             return redirect()->back()->withErrors(['error' => 'MikroTik not found.']);
         }
     
+        // Ambil posisi MikroTik atau beri nilai default
+        $posisiMikrotik = $data->site ?? 'Tidak Diketahui';
+    
+        // Cari data VPN terkait
+        $datavpn = VPN::where('ipaddress', $data->ipmikrotik)
+            ->where('unique_id', auth()->user()->unique_id)
+            ->first();
+            //dd($datavpn);
+        $portapi = $datavpn->portapi ?? null;
+    
+        // Konfigurasi koneksi ke MikroTik
         $client = new Client([
             'host' => 'id-1.aqtnetwork.my.id:' . $portapi,
             'user' => $data->username,
             'pass' => $data->password,
-            'port' => 9000
         ]);
     
-        $query = new Query('/ppp/active/print');
-        $activeConnections = $client->query($query)->read();
+        try {
+            // Ambil semua pengguna dari database melalui model ActiveMod
+            $allUsers = ActiveMod::where('unique_id', auth()->user()->unique_id)
+                ->where('ipmikrotik', $ipmikrotik)
+                ->get();  // Ganti pluck dengan get untuk mengambil data lengkap
     
-        // Ambil pengguna offline dan isolir berdasarkan logika yang Anda miliki
-        $offlineUsers = collect($activeConnections)->where('status', 'offline')->pluck('name');
-        $isolir = collect($activeConnections)->filter(function ($connection) {
-            return str_starts_with($connection['address'], '172');
-        })->pluck('name');
+            // Ambil pengguna aktif dari PPP Active
+            $queryActive = new Query('/ppp/active/print');
+            $activeConnections = collect($client->query($queryActive)->read());
     
-        return view('Dashboard/CEKDOWN/cari', compact('data', 'offlineUsers', 'isolir', 'mikrotik', 'posisiMikrotik'));
+            // Daftar pengguna yang sedang aktif
+            $activeUsers = $activeConnections->pluck('name');
+    
+            // Deteksi pengguna offline
+            $offlineUsers = $allUsers->filter(function ($user) use ($activeUsers) {
+                return !$activeUsers->contains($user->username);
+            })->map(function ($user) {
+                return [
+                    'username' => $user->username,
+                    'last_seen' => $user->last_seen 
+                        ? \Carbon\Carbon::parse($user->last_seen)->format('H:i:s d-m-Y') 
+                        : 'Tidak diketahui', // Formatkan last_seen jika ada
+                ];
+            });
+    
+            // Deteksi pengguna yang diisolir (alamat IP prefiks 172)
+            $isolir = $activeConnections->filter(function ($connection) {
+                return isset($connection['address']) && str_starts_with($connection['address'], '172');
+            })->pluck('name');
+    
+            // Kembalikan view dengan data yang relevan
+            return view('Dashboard/CEKDOWN/cari', compact('data', 'offlineUsers', 'isolir', 'mikrotik', 'posisiMikrotik'));
+        } catch (\Exception $e) {
+            // Tangani error saat koneksi atau query ke MikroTik gagal
+            return redirect()->back()->withErrors(['error' => 'Unable to connect to MikroTik: ' . $e->getMessage()]);
+        }
     }
     
 
-    public function chx(Request $request)
-    {
-        try {
-            // Ambil data MikroTik berdasarkan IP
-            $ipmikrotik = $request->input('ipmikrotik');
-            $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
     
-            // Ambil data VPN untuk port API
-            $datavpn = VPN::where('ipaddress', $data->ipmikrotik)
-                ->where('unique_id', auth()->user()->unique_id)
-                ->first();
-            $portapi = $datavpn->portapi ?? null;
+
+    // public function chx(Request $request)
+    // {
+    //     try {
+    //         // Ambil data MikroTik berdasarkan IP
+    //         $ipmikrotik = $request->input('ipmikrotik');
+    //         $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
     
-            if (!$data) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'MikroTik tidak ditemukan.',
-                ], 404);
-            }
+    //         // Ambil data VPN untuk port API
+    //         $datavpn = VPN::where('ipaddress', $data->ipmikrotik)
+    //             ->where('unique_id', auth()->user()->unique_id)
+    //             ->first();
+    //         $portapi = $datavpn->portapi ?? null;
     
-            // Konfigurasi MikroTik API Client
-            $client = new Client([
-                'host' => 'id-1.aqtnetwork.my.id:' . $portapi,
-                'user' => $data->username,
-                'pass' => $data->password,
-                'port' => 9000
-            ]);
+    //         if (!$data) {
+    //             return response()->json([
+    //                 'status' => 'error',
+    //                 'message' => 'MikroTik tidak ditemukan.',
+    //             ], 404);
+    //         }
     
-            // Query ke MikroTik untuk data koneksi aktif
-            $query = new Query('/ppp/active/print');
-            $activeConnections = $client->query($query)->read();
+    //         // Konfigurasi MikroTik API Client
+    //         $client = new Client([
+    //             'host' => 'id-1.aqtnetwork.my.id:' . $portapi,
+    //             'user' => $data->username,
+    //             'pass' => $data->password,
+    //             'port' => 9000
+    //         ]);
     
-            // Ambil username yang sudah ada di database
-            $existingUsers = ActiveMod::where('ipmikrotik', $ipmikrotik)
-                ->where('unique_id', auth()->user()->unique_id)
-                ->pluck('username')
-                ->toArray();
+    //         // Query ke MikroTik untuk data koneksi aktif
+    //         $query = new Query('/ppp/active/print');
+    //         $activeConnections = $client->query($query)->read();
     
-            // Hanya cari user yang tidak aktif (gangguan)
-            $offlineUsers = [];
-            $isolir = []; // Menyimpan user dengan IP yang dimulai dengan 172
+    //         // Ambil username yang sudah ada di database
+    //         $existingUsers = ActiveMod::where('ipmikrotik', $ipmikrotik)
+    //             ->where('unique_id', auth()->user()->unique_id)
+    //             ->pluck('username')
+    //             ->toArray();
     
-            // Cocokkan data koneksi aktif dan data di database
-            foreach ($existingUsers as $username) {
-                $isUserActive = false;
+    //         // Hanya cari user yang tidak aktif (gangguan)
+    //         $offlineUsers = [];
+    //         $isolir = []; // Menyimpan user dengan IP yang dimulai dengan 172
     
-                // Periksa apakah username ada di activeConnections
-                foreach ($activeConnections as $connection) {
-                    if (isset($connection['name']) && $connection['name'] == $username) {
-                        $isUserActive = true;
+    //         // Cocokkan data koneksi aktif dan data di database
+    //         foreach ($existingUsers as $username) {
+    //             $isUserActive = false;
     
-                        // Cek apakah IP address dimulai dengan 172 dan tambahkan ke isolir
-                        if (isset($connection['address']) && strpos($connection['address'], '172') === 0) {
-                            $isolir[] = $username; // Menambahkan user ke isolir jika IP dimulai dengan 172
-                        }
+    //             // Periksa apakah username ada di activeConnections
+    //             foreach ($activeConnections as $connection) {
+    //                 if (isset($connection['name']) && $connection['name'] == $username) {
+    //                     $isUserActive = true;
     
-                        break;
-                    }
-                }
+    //                     // Cek apakah IP address dimulai dengan 172 dan tambahkan ke isolir
+    //                     if (isset($connection['address']) && strpos($connection['address'], '172') === 0) {
+    //                         $isolir[] = $username; // Menambahkan user ke isolir jika IP dimulai dengan 172
+    //                     }
     
-                // Jika user tidak aktif, tambahkan ke daftar offlineUsers
-                if (!$isUserActive) {
-                    $offlineUsers[] = $username;
-                }
-            }
+    //                     break;
+    //                 }
+    //             }
     
-            // Kirim data ke view, hanya menampilkan user yang mengalami gangguan dan isolir
-            return view('Dashboard/CEKDOWN/index', [
-                'offlineUsers' => $offlineUsers,
-                'isolir' => $isolir // Mengirim data isolir ke view
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
+    //             // Jika user tidak aktif, tambahkan ke daftar offlineUsers
+    //             if (!$isUserActive) {
+    //                 $offlineUsers[] = $username;
+    //             }
+    //         }
+    
+    //         // Kirim data ke view, hanya menampilkan user yang mengalami gangguan dan isolir
+    //         return view('Dashboard/CEKDOWN/index', [
+    //             'offlineUsers' => $offlineUsers,
+    //             'isolir' => $isolir // Mengirim data isolir ke view
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
     public function syncActiveConnection(Request $request)
     {
+        $this->validate($request, [
+            'option' => 'required',
+        ]);
         try {
             // Ambil data MikroTik berdasarkan IP
             $ipmikrotik = $request->input('option');
+
 
             // Ambil data MikroTik berdasarkan IP
             $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
@@ -189,6 +229,8 @@ class ActiveConnectionController extends Controller
                         'unique_id' => auth()->user()->unique_id,
                         'ipmikrotik' => $ipmikrotik,
                         'site' => $data->site,
+                        'last_seen' => now(),
+
                     ]);
                     $newUsers++;
                 } else {
@@ -197,15 +239,12 @@ class ActiveConnectionController extends Controller
                 }
             }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $newUsers . ' new users synced successfully.',
-            ]);
+            return redirect()->back()->with('success', $newUsers . ' new users synced successfully.');
+
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ], 500);
+           
+            return redirect()->back()->with('error', $e->getMessage());
+
         }
     }
     public function getActiveConnections(Request $request)

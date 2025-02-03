@@ -52,20 +52,28 @@
                         <div class="col-12">
                             <div class="card wide-card">
                                 <div class="card-body text-center">
-                                    <h3>Selamat Datang di Aplikasi Management Mikrotik (AMMIK) AQT Network V.0.1!</h3>
+                                    <h3>Selamat Datang di Aplikasi Management Mikrotik (AMMIK) AQT Network V.1.9!</h3>
                                     <div class="row mt-3">
                                         <div class="col-md-4 col-12 mt-2">
                                             <a href="{{ route('datavpn') }}"
-                                                class="btn btn-primary btn-gradient btn-block">Data VPN</a>
+                                                class="btn btn-primary btn-gradient btn-block"><i class="fas fa-tty"></i> Data VPN</a>
                                         </div>
                                         <div class="col-md-4 col-12 mt-2">
                                             <a href="{{ route('datamikrotik') }}"
-                                                class="btn btn-primary btn-gradient btn-block">Data Mikrotik</a>
+                                                class="btn btn-primary btn-gradient btn-block"><i class="fas fa-sitemap"></i> Data Mikrotik</a>
                                         </div>
                                         <div class="col-md-4 col-12 mt-2">
                                             <a href="{{ route('dataolt') }}"
-                                                class="btn btn-primary btn-gradient btn-block">Data OLT</a>
+                                                class="btn btn-primary btn-gradient btn-block"><i class="fas fa-servefas fa-project-diagram"></i> Data OLT</a>
                                         </div>
+                                        @if (Auth::user()->email == 'support-noc@aqtnetwork.my.id')
+                                            <div class="col-md-12 col-12 mt-2">
+                                                <a href="{{ route('cekdown') }}"
+                                                    class="btn btn-primary btn-gradient btn-block"><i class="fas fa-search"></i> Cek Down</a>
+                                            </div>
+                                            
+                                        @endif
+                                        
                                     </div>
                                 </div>
                             </div>

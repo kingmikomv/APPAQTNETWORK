@@ -53,10 +53,12 @@ Route::group(['prefix' => '/home/datavpn', 'middleware' => ['auth', 'verified']]
     });
 });
 
-Route::get('/home/cekdown/sync-active-connection', [ActiveConnectionController::class, 'syncActiveConnection'])->name('sync.active.connection');
+Route::get('/home/cekdown/sync-active-connection', [ActiveConnectionController::class, 'syncActiveConnection'])->name('sync.active.connection')->middleware('restrict.support.noc');
+;
 
-Route::get('/home/cekdown', [ActiveConnectionController::class, 'index'])->name('cekdown');
-Route::get('/home/cekdown/cari', [ActiveConnectionController::class, 'cari'])->name('cari');
+Route::get('/home/cekdown', [ActiveConnectionController::class, 'index'])->name('cekdown')  ->middleware('restrict.support.noc');
+Route::get('/home/cekdown/cari', [ActiveConnectionController::class, 'cari'])->name('cari') ->middleware('restrict.support.noc');
+
 
 
 // MIKROTIK Routes

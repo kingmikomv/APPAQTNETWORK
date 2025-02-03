@@ -110,20 +110,4 @@
 </div>
 
 <x-dcore.script />
-@if (session('success'))
-              <script>
-                  Swal.fire({
-                      icon: 'success',
-                      title: '{{ session('success') }}',
-                      showConfirmButton: true
-                  });
-              </script>
-          @elseif (session('error'))
-              <script>
-                  Swal.fire({
-                      icon: 'error',
-                      title: '{{ session('error') }}',
-                      showConfirmButton: true
-                  });
-              </script>
-          @endif
+<x-dcore.alert />

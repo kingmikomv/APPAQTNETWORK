@@ -33,7 +33,7 @@
     @if (Auth::user()->email === 'support-noc@aqtnetwork.my.id')
         <li class="{{ request()->routeIs('cekdown') ? 'active' : '' }}">
             <a href="{{ route('cekdown')}}" class="nav-link">
-                <i class="fas fa-check-circle"></i>
+                <i class="fas fa-search"></i>
                 <span>Cek Down</span>
             </a>
         </li>
