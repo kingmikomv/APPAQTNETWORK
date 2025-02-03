@@ -9,25 +9,31 @@
         <ul class="sidebar-menu">
             <!-- Server Section -->
             <li class="menu-header">Server</li>
-            <li class="dropdown {{ request()->routeIs('datavpn', 'dashboardmikrotik', 'datamikrotik', 'dataolt') ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown"><i class="fas fa-server"></i> <span>Server</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{ request()->routeIs('datavpn') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('datavpn') }}"><i class="fas fa-tty"></i> Data VPN</a>
-                    </li>
-                    @if(session('mikrotik_connected'))
-                    <li class="{{ request()->routeIs('dashboardmikrotik') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('dashboardmikrotik', ['ipmikrotik' => session('ipmikrotik')]) }}"><i class="fas fa-dice-d6"></i> Dashboard</a>
-                    </li>
-                    @else
-                    <li class="{{ request()->routeIs('datamikrotik') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('datamikrotik') }}"><i class="fas fa-sitemap"></i> Data Mikrotik</a>
-                    </li>
-                    @endif
-                    <li class="{{ request()->routeIs('dataolt') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('dataolt') }}"><i class="fas fa-project-diagram"></i> Data OLT</a>
-                    </li>
-                </ul>
+            <li class="{{ request()->routeIs('datavpn') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('datavpn') }}">
+                    <i class="fas fa-tty"></i> 
+                    <span>Data VPN</span>
+                </a>
+            </li>
+            @if(session('mikrotik_connected'))
+            <li class="{{ request()->routeIs('dashboardmikrotik') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('dashboardmikrotik', ['ipmikrotik' => session('ipmikrotik')]) }}">
+                    <i class="fas fa-dice-d6"></i> 
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            @else
+            <li class="{{ request()->routeIs('datamikrotik') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('datamikrotik') }}">
+                    <i class="fas fa-sitemap"></i> 
+                    <span>Data Mikrotik</span>
+                </a>
+            </li>
+            @endif
+            <li class="{{ request()->routeIs('dataolt') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('dataolt') }}"><i class="fas fa-project-diagram"></i> 
+                    <span>Data OLT</span>
+                </a>
             </li>
             @auth
     @if (Auth::user()->email === 'support-noc@aqtnetwork.my.id')
@@ -42,7 +48,7 @@
             <!-- Main Menu Section (Shown if connected to MikroTik) -->
             @if(session('mikrotik_connected'))
             
-            <li class="menu-header">Main Menu</li>
+            <li class="menu-header">Menu Server</li>
             <li class="dropdown {{ request()->routeIs('active-connection', 'aksesschedule', 'aksessecret', 'aksesinterface', 'aksesactivehotspot', 'aksesuserhotspot') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-route"></i> <span>Main Menu</span></a>
                 <ul class="dropdown-menu">
@@ -95,6 +101,8 @@
             </li>
             @endif
             @if(['can:isAdmin', 'can:isUser'])
+            <li class="menu-header">Shopping</li>
+
             <li class="dropdown {{ request()->routeIs('shop') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-shopping-cart"></i> <span>Beli</span></a>
                 <ul class="dropdown-menu">
@@ -135,7 +143,10 @@
             </li>
 
             @endcan
+            <li class="menu-header">My Account</li>
+
             <li class="dropdown ">
+
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-user"></i> <span>Profil</span></a>
                 <ul class="dropdown-menu">
                     <li class="">
