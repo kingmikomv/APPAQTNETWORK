@@ -101,8 +101,8 @@
                             <div class="card-header text-center bg-danger text-white">
                                 <h5>Pengguna Isolir</h5>
                             </div>
-                            <div class="card-body table-responsive">
-                                <table class="table table-bordered" id="user">
+                            <div class="card-body">
+                                <table class="table table-bordered table-responsive" id="user">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th class="text-center">Pengguna Isolir</th>
