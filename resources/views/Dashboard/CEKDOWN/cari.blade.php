@@ -167,24 +167,28 @@
 
 <script>
     $(document).ready(function () {
-        // Inisialisasi DataTable untuk tabel #user
-        $('#user').DataTable({
-            responsive: true,
-            autoWidth: false,
-            paging: $('#user tbody tr').length >=
-                60, // Aktifkan pagination jika jumlah baris 60 atau lebih
-            pageLength: 50 // Tampilkan 50 baris per halaman jika pagination aktif
-        });
-
-        // Inisialisasi DataTable untuk tabel #user2
-        $('#user2').DataTable({
-            responsive: true,
-            autoWidth: false,
-            paging: $('#user2 tbody tr').length >=
-                60, // Aktifkan pagination jika jumlah baris 60 atau lebih
-            pageLength: 50 // Tampilkan 50 baris per halaman jika pagination aktif
-        });
+    // Inisialisasi DataTable untuk tabel #user
+    $('#user').DataTable({
+        responsive: true,
+        autoWidth: false,
+        paging: $('#user tbody tr').length >= 60, // Aktifkan pagination jika jumlah baris 60 atau lebih
+        pageLength: 50, // Tampilkan 50 baris per halaman jika pagination aktif
+        columnDefs: [
+            { targets: '_all', className: 'text-left' } // Teks rata kiri di semua kolom
+        ]
     });
+
+    // Inisialisasi DataTable untuk tabel #user2
+    $('#user2').DataTable({
+        responsive: true,
+        autoWidth: false,
+        paging: $('#user2 tbody tr').length >= 60, // Aktifkan pagination jika jumlah baris 60 atau lebih
+        pageLength: 50, // Tampilkan 50 baris per halaman jika pagination aktif
+        columnDefs: [
+            { targets: '_all', className: 'text-left' } // Teks rata kiri di semua kolom
+        ]
+    });
+});
 
 </script>
 @if (session('success'))
