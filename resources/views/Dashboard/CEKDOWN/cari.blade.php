@@ -101,7 +101,7 @@
                             <div class="card-header text-center bg-danger text-white">
                                 <h5>Pengguna Isolir</h5>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body table-responsive">
                                 <table class="table table-bordered" id="user">
                                     <thead class="thead-dark">
                                         <tr>
