@@ -75,6 +75,8 @@
                             </div>
 
                             <div class="card-body">
+                                <div class="table-responsive">
+
                                 <table class="table table-bordered" id="user2">
                                     <thead class="thead-dark">
                                         <tr>
@@ -91,7 +93,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-
+                                </div>
                             </div>
                         </div>
                     </div>
