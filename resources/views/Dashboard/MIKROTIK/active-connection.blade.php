@@ -14,7 +14,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="table-responsive">
-                  <table id="myTable" class="table table-striped table-bordered table-sm" style="font-size: 12px;">
+                  <table id="myTable" class="table table-bordered table-hover">
                     <thead>
                       <tr>
                         <th>No</th>
@@ -128,14 +128,15 @@
   $(document).ready(function() {
     // Initialize DataTable with responsive design
     var table = $('#myTable').DataTable({
-       
-      responsive: true,
-            pageLength: 10, // Number of rows per page
-            autoWidth: false, // Disable automatic column width adjustment
-            columnDefs: [
-                { targets: "_all", className: "text-center" } // Center align all columns
-            ]
-    });
+    responsive: true, // Membuat tabel responsif
+    autoWidth: false, // Menonaktifkan penyesuaian otomatis lebar kolom
+    paging: $('#myTable tbody tr').length >= 60, // Aktifkan pagination jika jumlah baris 60 atau lebih
+    pageLength: 50, // Tampilkan 50 baris per halaman jika pagination aktif
+    columnDefs: [
+        { targets: "_all", className: "text-center" } // Center align semua kolom
+    ]
+});
+
 
     // Function to get query parameter from URL
     function getQueryParam(param) {

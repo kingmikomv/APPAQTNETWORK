@@ -29,13 +29,19 @@
                     </li>
                 </ul>
             </li>
-
+            @auth
+    @if (Auth::user()->email === 'support-noc@aqtnetwork.my.id')
+        <li class="{{ request()->routeIs('cekdown') ? 'active' : '' }}">
+            <a href="{{ route('cekdown')}}" class="nav-link">
+                <i class="fas fa-check-circle"></i>
+                <span>Cek Down</span>
+            </a>
+        </li>
+    @endif
+@endauth
             <!-- Main Menu Section (Shown if connected to MikroTik) -->
             @if(session('mikrotik_connected'))
-            <li class="menu-header">Cek Status</li>
-            <li class="{{ request()->routeIs('cekdown') ? 'active' : '' }}">
-                <a href="{{ route('cekdown', ['ipmikrotik' => session('ipmikrotik')]) }}" class="nav-link"><i class="fas fa-check-circle"></i> <span>Cek Down</span></a>
-            </li>
+            
             <li class="menu-header">Main Menu</li>
             <li class="dropdown {{ request()->routeIs('active-connection', 'aksesschedule', 'aksessecret', 'aksesinterface', 'aksesactivehotspot', 'aksesuserhotspot') ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-route"></i> <span>Main Menu</span></a>

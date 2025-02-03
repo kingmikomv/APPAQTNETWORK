@@ -13,6 +13,54 @@ class ActiveConnectionController extends Controller
 {
     public function index(Request $request)
     {
+        $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
+        //dd($mikrotik);
+        return view('Dashboard/CEKDOWN/cari', compact('mikrotik'));
+    }
+    
+    public function cari(Request $request)
+    {
+        $mikrotik = Mikrotik::where('unique_id', auth()->user()->unique_id)->get();
+
+        $ipmikrotik = $request->input('option');
+
+        if(!$ipmikrotik) {
+            return view('Dashboard/CEKDOWN/cari', compact('mikrotik'));
+
+        }
+        $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
+        $posisiMikrotik = $data->site;
+        $datavpn = VPN::where('ipaddress', $data->ipmikrotik)
+            ->where('unique_id', auth()->user()->unique_id)
+            ->first();
+        $portapi = $datavpn->portapi ?? null;
+    
+        if (!$data) {
+            return redirect()->back()->withErrors(['error' => 'MikroTik not found.']);
+        }
+    
+        $client = new Client([
+            'host' => 'id-1.aqtnetwork.my.id:' . $portapi,
+            'user' => $data->username,
+            'pass' => $data->password,
+            'port' => 9000
+        ]);
+    
+        $query = new Query('/ppp/active/print');
+        $activeConnections = $client->query($query)->read();
+    
+        // Ambil pengguna offline dan isolir berdasarkan logika yang Anda miliki
+        $offlineUsers = collect($activeConnections)->where('status', 'offline')->pluck('name');
+        $isolir = collect($activeConnections)->filter(function ($connection) {
+            return str_starts_with($connection['address'], '172');
+        })->pluck('name');
+    
+        return view('Dashboard/CEKDOWN/cari', compact('data', 'offlineUsers', 'isolir', 'mikrotik', 'posisiMikrotik'));
+    }
+    
+
+    public function chx(Request $request)
+    {
         try {
             // Ambil data MikroTik berdasarkan IP
             $ipmikrotik = $request->input('ipmikrotik');
@@ -89,15 +137,12 @@ class ActiveConnectionController extends Controller
             ], 500);
         }
     }
-    
-
-
 
     public function syncActiveConnection(Request $request)
     {
         try {
             // Ambil data MikroTik berdasarkan IP
-            $ipmikrotik = $request->input('ipmikrotik');
+            $ipmikrotik = $request->input('option');
 
             // Ambil data MikroTik berdasarkan IP
             $data = Mikrotik::where('ipmikrotik', $ipmikrotik)->first();
