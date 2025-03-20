@@ -18,7 +18,7 @@ class DepanController extends Controller
     $token = "123456";
 
     // URL API
-    $url = "http://localhost:8000/api/undianapi";
+    $url = "https://biller.aqtnetwork.my.id/api/undianapi";
 
     // Panggil API menggunakan HTTP Client Laravel dengan Bearer Token
     $response = Http::withToken($token)->get($url);

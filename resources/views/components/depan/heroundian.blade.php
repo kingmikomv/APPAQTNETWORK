@@ -20,7 +20,7 @@
                                     <div class="undian-winner-card">
                                         <div class="undian-winner-image">
 
-                                            <img src="{{ url('http://localhost:8000/undian/pemenang/' . $row['foto_pemenang']) }}"
+                                            <img src="{{ url('https://biller.aqtnetwork.my.id/undian/pemenang/' . $row['foto_pemenang']) }}"
                                                 alt="Foto Pemenang">
                                        
                                         </div>

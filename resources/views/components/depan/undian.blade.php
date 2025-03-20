@@ -19,7 +19,7 @@
                     <span class="position-absolute top-0 start-50 translate-middle badge bg-danger">
                         #{{ $no++ }}
                     </span>
-                    <img src="{{ 'http://localhost:8000/' . $row['foto_undian'] }}" class="card-img-top rounded-3"
+                    <img src="{{ 'https://biller.aqtnetwork.my.id/' . $row['foto_undian'] }}" class="card-img-top rounded-3"
                         alt="Undian Image" style="max-height: 200px; object-fit: cover;">
                     <div class="card-body text-center">
                         <h5 class="fw-bold text-primary">{{ $row['nama_undian'] }}</h5>
@@ -45,7 +45,7 @@
                                     </div>
                                     <div class="modal-body text-center">
                                         @if (!empty($row['foto_pemenang']))
-                                        <img src="{{ 'http://localhost:8000/undian/pemenang/' . $row['foto_pemenang'] }}"
+                                        <img src="{{ 'https://biller.aqtnetwork.my.id/undian/pemenang/' . $row['foto_pemenang'] }}"
                                             class="rounded-3 img-fluid" alt="Foto Pemenang">
                                         @else
                                         <div class="alert alert-warning fw-bold">🏆 PEMENANG BELUM MENGAMBIL HADIAH
@@ -80,7 +80,7 @@
                 <div class="carousel-cell">
                     <div class="winner-card">
                         <div class="winner-image">
-                            <img src="{{ url('http://localhost:8000/undian/pemenang/' . $row['foto_pemenang']) }}"
+                            <img src="{{ url('https://biller.aqtnetwork.my.id/undian/pemenang/' . $row['foto_pemenang']) }}"
                                 alt="Foto Pemenang">
                         </div>
                         <div class="winner-info">
