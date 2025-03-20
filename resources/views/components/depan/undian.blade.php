@@ -2,58 +2,113 @@
 
     <!-- Section Title -->
     <div class="container section-title" data-aos="fade-up">
-        <h2>Undian Hadiah</h2>
-        <p>Informasi Undian dan Pemenang Undian ada disini</p>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-danger">🎉 Daftar Undian Berhadiah 🎊</h2>
+            <p class="text-muted">Siapa yang beruntung kali ini? Lihat daftar undian di bawah ini!</p>
+        </div>
     </div><!-- End Section Title -->
 
-    <div class="container">
+    <div class="container py-5">
+        <div class="row g-4">
+            @php $no = 1; @endphp
+            @if (!empty($daftarundian) && is_array($daftarundian))
+            @foreach ($daftarundian as $row)
+            @php $modalId = 'modalPemenang' . $no; @endphp
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-lg border-0 rounded-4 p-3 bg-light position-relative">
+                    <span class="position-absolute top-0 start-50 translate-middle badge bg-danger">
+                        #{{ $no++ }}
+                    </span>
+                    <img src="{{ 'http://localhost:8000/' . $row['foto_undian'] }}" class="card-img-top rounded-3"
+                        alt="Undian Image" style="max-height: 200px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bold text-primary">{{ $row['nama_undian'] }}</h5>
+                        <p class="mb-2"><strong>Kode:</strong> {{ $row['kode_undian'] }}</p>
+                        <p class="text-muted"><strong>Tanggal Kocok:</strong> {{ $row['tanggal_kocok'] }}</p>
 
-        <div class="row justify-content-center gy-4">
-            <!-- Pusatkan Formulir -->
+                        @if (!empty($row['pemenang']))
+                        <div class="alert alert-success py-2 fw-bold">🎉 Pemenang: {{ $row['pemenang'] }}</div>
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
+                            🏆 Lihat Foto Pemenang
+                        </button>
 
-            <div class="col-lg-12 col-md-8" data-aos="fade-up" data-aos-delay="150">
-                <div class="service-item table-responsive">
-                    <table class="table" id="untianTable">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode Undian</th>
-                                <th>Site / Lokasi</th>
-                                <th>Hadiah Undian</th>
-                                <th>Tanggal Dimulai</th>
-                                <th>Pemenang Undian</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $no = 1; @endphp
-                            @foreach ($daftarundian as $row)
-                            <tr>
-                                <td>{{ $no++ }}</td>
-                                <td>{{ $row->unique_undian }}</td>
-                                <td>{{ $row->site }}</td>
-                                <td>{{ $row->hadiah }}</td>
-                                <td>{{ $row->tanggal }}</td>
-                                <td>{{ $row->pemenang ?? 'Belum Diundi' }}</td>
-                                
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                        <!-- Modal Bootstrap -->
+                        <div class="modal fade" id="{{ $modalId }}" tabindex="-1"
+                            aria-labelledby="modalLabel{{ $modalId }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title fw-bold" id="modalLabel{{ $modalId }}">Foto Pemenang:
+                                            {{ $row['pemenang'] }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        @if (!empty($row['foto_pemenang']))
+                                        <img src="{{ 'http://localhost:8000/undian/pemenang/' . $row['foto_pemenang'] }}"
+                                            class="rounded-3 img-fluid" alt="Foto Pemenang">
+                                        @else
+                                        <div class="alert alert-warning fw-bold">🏆 PEMENANG BELUM MENGAMBIL HADIAH
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        <div class="alert alert-warning py-2">Belum Diundi</div>
+                        @endif
+                    </div>
                 </div>
-            </div><!-- End Service Item -->
+            </div>
+            @endforeach
+            @else
+            <div class="col-12 text-center">
+                <div class="alert alert-danger fw-bold">🚨 Tidak ada data undian tersedia</div>
+            </div>
+            @endif
+        </div>
+    </div>
 
-        </div><!-- End Row -->
+    @if (!empty($daftarundian) && is_array($daftarundian))
+    <div class="container mt-5 text-center">
+        <h3 class="fw-bold text-primary">🎉 Pemenang Undian 🎉</h3>
+        <div class="coverflow-gallery mt-4">
+            <div class="carousel">
+                @foreach ($daftarundian as $row)
+                @if (!empty($row['foto_pemenang']))
+                <div class="carousel-cell">
+                    <div class="winner-card">
+                        <div class="winner-image">
+                            <img src="{{ url('http://localhost:8000/undian/pemenang/' . $row['foto_pemenang']) }}"
+                                alt="Foto Pemenang">
+                        </div>
+                        <div class="winner-info">
+                            <h5>{{ $row['pemenang'] }}</h5>
+                            <p><strong>Kode:</strong> {{ $row['kode_undian'] }}</p>
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @endforeach
+            </div>
+        </div>
+    </div>
 
-    </div><!-- End Container -->
+    
+
+   
+    @endif
+
+
+
+
+
+
+
+
+
+
+
 
 </section><!-- End Section -->
-<section id="gallery" class="gallery-section py-5">
-    <div class="row">
-        <div class="col-md-4">1</div>
-        <div class="col-md-4">1</div>
-        <div class="col-md-4">1</div>
-   
-
-    </div>
-</section>
