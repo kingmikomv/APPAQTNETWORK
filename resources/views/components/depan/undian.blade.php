@@ -19,8 +19,11 @@
                     <span class="position-absolute top-0 start-50 translate-middle badge bg-danger">
                         #{{ $no++ }}
                     </span>
-                    <img src="{{ 'https://biller.aqtnetwork.my.id/' . $row['foto_undian'] }}" class="card-img-top rounded-3"
-                        alt="Undian Image" style="max-height: 200px; object-fit: cover;">
+                    <img src="{{ 'https://biller.aqtnetwork.my.id/' . $row['foto_undian'] }}" 
+    class="card-img-top rounded-3"
+    alt="Undian Image" 
+    style="width: 200px; height: 200px; object-fit: cover; display: block; margin: auto;">
+
                     <div class="card-body text-center">
                         <h5 class="fw-bold text-primary">{{ $row['nama_undian'] }}</h5>
                         <p class="mb-2"><strong>Kode:</strong> {{ $row['kode_undian'] }}</p>
