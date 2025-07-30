@@ -22,6 +22,7 @@
                         <th>Action</th>
                         <th>Type</th>
                         <th>Address</th>
+                        <th>Mac</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -48,6 +49,8 @@
                           </td>
                           <td>{{ $d['service'] }}</td>
                           <td id="text-to-copy">{{ $d['address'] }}</td>
+                        <td id="text-to-copy">{{ $d['caller-id'] }}</td>
+
                         </tr>
                       @endforeach
                     </tbody>
